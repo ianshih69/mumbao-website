@@ -1,0 +1,47 @@
+/* 整個鋪滿畫面的夜空背景 */
+.meteor-wrapper {
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 30%, #1a1a2f 0%, #050509 70%);
+  z-index: 9999; /* 放最上層發光，不擋滑鼠(pointer-events:none有處理) */
+  font-family: system-ui, sans-serif;
+}
+
+/* 單一顆流星本體 */
+.meteor {
+  position: absolute;
+  width: 2px;
+  height: 80px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
+  border-radius: 50%;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: top left;
+  will-change: transform, opacity;
+}
+
+/* 流星滑行動畫：用 CSS 變數決定方向跟距離 */
+@keyframes shoot {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(var(--angle)) scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--angle))
+      scaleY(1);
+  }
+}
+
+
+
+
