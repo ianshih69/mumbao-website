@@ -2,7 +2,7 @@
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-black text-white">
+    <footer className="border-t border-[var(--border-main)] bg-[var(--bg-card)] text-[var(--text-main)]">
       <div className="mx-auto max-w-6xl px-4 py-10 text-sm">
         <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
           <div className="flex items-center gap-4">

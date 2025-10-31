@@ -1,31 +1,33 @@
 @import "tailwindcss";
 
- :root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ===== 主題色系 (美拉德系) ===== */
+:root {
+  --bg-main: #F3E5D0;       /* 淺拿鐵/奶油焦糖，整體背景 */
+  --bg-card: #FFF7E9;       /* 更淺的奶油米色，用在卡片 */
+  --bg-header: #EED8BF;     /* header 淺焦糖帶一點奶色 */
+  --text-main: #2F1F14;     /* 內文深咖啡 */
+  --title-main: #8B5A2B;    /* 標題焦糖棕 */
+  --border-main: #4A3A27;   /* 邊線深咖啡 */
+  --accent-main: #C97A2B;   /* 重點色：琥珀焦糖 */
+  --tag-bg: #F9EDCC;        /* 小標籤底色：蜂蜜奶油 */
+  --tag-text: #6B4E2E;      /* 小標籤文字咖啡 */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-main);
+  --color-foreground: var(--text-main);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ===== 頁面底色 ===== */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-main);
+  color: var(--text-main);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* MeteorShower global styles (global CSS must live in layout/globals) */
+/* ===== 流星 + 星空特效容器 (保留你原本有的) ===== */
 .meteor-wrapper {
   position: fixed;
   inset: 0;
@@ -64,4 +66,53 @@ body {
     opacity: 0;
     transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--angle)) scaleY(1);
   }
+}
+
+/* =============================== */
+/*   吉祥物飛行動畫區               */
+/* =============================== */
+
+/* 「整組」(雲+抹布) 在畫面裡自由亂飛
+   我們讓它繞一個大路徑，覆蓋視窗的 60%～70% 範圍
+   用 translate3d 讓它看起來在巡航，不是固定在右下角
+*/
+@keyframes mascot-free-fly {
+  0%   { transform: translate3d( 10vw,  70vh, 0); }
+  20%  { transform: translate3d( 30vw,  50vh, 0); }
+  40%  { transform: translate3d( 60vw,  30vh, 0); }
+  60%  { transform: translate3d( 40vw,  20vh, 0); }
+  80%  { transform: translate3d( 15vw,  40vh, 0); }
+  100% { transform: translate3d( 10vw,  70vh, 0); }
+}
+
+/* 雲在飛行過程中自己微微上下飄一下，像浮在空氣裡 */
+@keyframes mascot-cloud-bob {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ========== 保險用 class ========== */
+/* 用 className 而不是 Tailwind 的 animate-[...] 寫法，
+   這樣就算 Tailwind 對任意 keyframes 沒吃到，也保證會動。
+*/
+
+/* 整組巡航（大範圍亂飛） */
+.mascot-fly-anim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  animation: mascot-free-fly 18s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* 雲輕輕上下浮 */
+.cloud-bob-anim {
+  animation: mascot-cloud-bob 5s ease-in-out infinite;
+}
+
+/* 抹布現在先不踩步，保持穩定站姿
+   不給腳步動畫，單純貼在雲上 */
+.dog-idle-anim {
+  animation: none;
 }

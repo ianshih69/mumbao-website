@@ -15,26 +15,26 @@ export default function RoomDetailPage({ params }: Props) {
       <NavBar />
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid md:grid-cols-2 gap-8 items-start">
-          <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden border border-amber-100 bg-amber-50">
+          <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden border border-[var(--border-main)] bg-[var(--bg-card)]">
             <Image src={room.image} alt={room.title} fill className="object-cover" />
           </div>
           <div>
-            <h1 className="text-3xl font-semibold tracking-wide">
+            <h1 className="text-3xl font-semibold tracking-wide text-[var(--title-main)]">
               {room.title}
             </h1>
-            <p className="mt-3 text-zinc-700">{room.desc}</p>
+            <p className="mt-3 text-[var(--text-main)]">{room.desc}</p>
 
             {room.features?.length ? (
               <div className="mt-6 flex flex-wrap gap-2">
                 {room.features.map((f) => (
-                  <span key={f} className="rounded-full px-3 py-1 text-xs bg-amber-50 text-amber-700 border border-amber-100">
+                  <span key={f} className="rounded-full px-3 py-1 text-xs bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--border-main)]">
                     {f}
                   </span>
                 ))}
               </div>
             ) : null}
 
-            <a href="#booking" className="mt-8 inline-block rounded-full px-5 py-2 bg-yellow-600 text-white shadow-sm">
+            <a href="#booking" className="mt-8 inline-block rounded-full px-5 py-2 bg-[var(--accent-main)] text-white shadow-sm border border-[var(--border-main)]">
               預約此房型
             </a>
           </div>
