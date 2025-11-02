@@ -3,37 +3,12 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RoomCard from "@/components/RoomCard";
+import LatestNewsSection from "@/components/LatestNewsSection";
 import Image from "next/image";
 import Link from "next/link";
 import { rooms } from "@/data/rooms";
 
 export default function Home() {
-  const newsItems = [
-    {
-      slug: "news-1",
-      title: "春日慢活之旅開跑",
-      date: "2025-03-15",
-      excerpt:
-        "迎接春暖花開的季節，我們準備了特別的慢活體驗活動，讓您在悠閒的步調中感受大自然的美好。",
-      image: "/images/page1.jpg",
-    },
-    {
-      slug: "news-2",
-      title: "全新房型即將開放",
-      date: "2025-03-10",
-      excerpt:
-        "我們正在準備一間全新的星空套房，擁有絕佳的觀星視角，敬請期待！",
-      image: "/images/page1.jpg",
-    },
-    {
-      slug: "news-3",
-      title: "寵物友善設施升級",
-      date: "2025-03-05",
-      excerpt:
-        "為了讓毛孩們也能享受舒適的住宿體驗，我們新增了多項寵物友善設施。",
-      image: "/images/page1.jpg",
-    },
-  ];
 
   return (
     <>
@@ -130,109 +105,8 @@ export default function Home() {
       </section>
 
 
-      {/* [3] 最新消息（Wandering Walls 版） */}
-      <section className="bg-[#A4835E] py-16 md:py-24">
-        <div className="mx-auto max-w-[1280px] px-4">
-
-          {/* 標題：細字、超大字距、置中 */}
-          <h2
-            className="
-              text-[#1a1a1a]
-              text-xl md:text-2xl
-              font-normal
-              leading-none
-              tracking-[0.4em]
-              text-center
-              mb-12 md:mb-14
-            "
-          >
-            最 新 消 息
-          </h2>
-
-          {/* 兩欄卡片：桌機 2 欄，手機只顯示第 1 欄 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 mb-12">
-
-            {newsItems.slice(0, 2).map((item, idx) => (
-              <article
-                key={item.slug}
-                className={
-                  // 第一則：永遠顯示
-                  // 第二則：只有 md(>=768px) 以上才顯示
-                  idx === 0
-                    ? "flex flex-col"
-                    : "hidden md:flex flex-col"
-                }
-              >
-                {/* 圖片區：大圖，無圓角，佔滿寬度，比例 6:5 */}
-                <div
-                  className="
-                    relative
-                    w-full
-                    overflow-hidden
-                    bg-black/10
-                    aspect-[6/5]    /* 寬 : 高 = 6 : 5，接近他們首頁視覺那種「房子/食物大圖」的高度感 */
-                  "
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover object-center"
-                  />
-                </div>
-
-                {/* 文字區 */}
-                <div className="mt-4">
-                  {/* 標題（粗度正常，接近官網那種不加粗 / 不花俏） */}
-                  <Link
-                    href={`/news/${item.slug}`}
-                    className="
-                      block
-                      text-[#1a1a1a]
-                      text-base md:text-lg
-                      leading-snug
-                      font-normal
-                    "
-                  >
-                    {item.title}
-                  </Link>
-
-                  {/* 日期（淡一階、縮寫成 2025.08.01 這種格式） */}
-                  <p
-                    className="
-                      mt-2
-                      text-[#1a1a1a]/70
-                      text-sm
-                      leading-relaxed
-                      tracking-wide
-                    "
-                  >
-                    {item.date.replace(/-/g, ".")}
-                  </p>
-                </div>
-              </article>
-            ))}
-
-          </div>
-
-          {/* 更多 + 置中 */}
-          <div className="text-center">
-            <Link
-              href="/news"
-              className="
-                inline-flex items-center gap-1
-                text-[#1a1a1a]
-                text-sm md:text-base
-                leading-none
-              "
-            >
-              <span>更多</span>
-              <span>＋</span>
-            </Link>
-          </div>
-
-        </div>
-      </section>
+      {/* [3] 最新消息 */}
+      <LatestNewsSection />
 
 
       {/* [4] 房型介紹（上方分隔線，不滿版） */}
