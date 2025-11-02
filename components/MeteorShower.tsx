@@ -329,11 +329,12 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
         top: 0,
         width: "100vw",
         height: "100vh",
-        zIndex: 5, // above starfield (0), below content wrapper (10)
+        // 讓流星跑在整個網站內容上面，但還是在抹布下面
+        zIndex: 15,
         pointerEvents: "none",
       }}
     />
-  );
+  );  
 }
 
 

@@ -1,27 +1,52 @@
-import NavBar from "@/components/NavBar";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Image from "next/image";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <>
-      <NavBar />
-      <main className="mx-auto max-w-6xl px-4 py-12">
-        <h1 className="text-3xl font-semibold text-[var(--title-main)]">慢寶宇宙的誕生</h1>
-        <div className="mt-8 grid md:grid-cols-2 gap-8 items-start">
-          <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden border border-[var(--border-main)] bg-[var(--bg-card)] shadow-lg">
-            <Image src="/mumbao.png" alt="慢寶" fill className="object-cover" />
-            <div className="absolute inset-0 bg-black/10" />
+      <Header />
+      <main className="bg-[var(--bg-main)] min-h-screen py-16 md:py-24">
+        <div className="mx-auto max-w-4xl px-4">
+          <h1 className="text-4xl md:text-5xl font-semibold text-[var(--title-main)] mb-8">
+            關於我們
+          </h1>
+          
+          <div className="prose prose-lg max-w-none text-[var(--text-main)] space-y-6">
+            <p className="leading-7">
+              在慢節奏的生活中，找到屬於自己的時光。慢慢蒔光致力於打造一個讓人放鬆、療癒的空間，
+              讓每一位訪客都能在繁忙的生活中，找回內心的平靜與美好。
+            </p>
+            
+            <p className="leading-7">
+              我們相信，什麼都不做，也值得被愛。在這裡，時間不再是壓力，而是可以慢慢品味的美好。
+            </p>
+            
+            <h2 className="text-2xl font-semibold text-[var(--title-main)] mt-8 mb-4">
+              我們的理念
+            </h2>
+            <p className="leading-7">
+              慢慢蒔光以「慢活」為核心理念，希望每位訪客都能在這個空間中找到屬於自己的節奏。
+              我們提供的不僅是一個住宿的地方，更是一個可以讓心靈休息、重新充電的空間。
+            </p>
+            
+            <h2 className="text-2xl font-semibold text-[var(--title-main)] mt-8 mb-4">
+              環境與設施
+            </h2>
+            <p className="leading-7">
+              我們的空間設計融合了自然元素與現代舒適，每個房間都經過精心設計，
+              希望能為您帶來最舒適的住宿體驗。無論是想要安靜閱讀、觀星、或是與寵物共度時光，
+              這裡都能滿足您的需求。
+            </p>
           </div>
-          <div>
-            <p className="leading-7 text-[var(--text-main)]">
-              慢寶是來自宇宙的小無尾熊，象徵療癒與願望守護。當你感到心累或步伐太快，
-              牠會把你輕輕抱進雲朵裡，提醒你：慢慢來也值得被愛。
-            </p>
-            <p className="mt-4 leading-7 text-[var(--text-main)]">
-              在奶油白的宇宙背景中，柔和的陰影與雲朵圓角承載著光；金色點亮願望，
-              陪你靜靜把心安放好，重新出發。
-            </p>
+          
+          <div className="mt-12 pt-8 border-t border-[var(--border-main)]/30">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-[var(--accent-main)] hover:underline"
+            >
+              ← 返回首頁
+            </Link>
           </div>
         </div>
       </main>
@@ -29,5 +54,3 @@ export default function AboutPage() {
     </>
   );
 }
-
-
