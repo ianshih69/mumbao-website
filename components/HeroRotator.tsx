@@ -27,15 +27,15 @@ export default function HeroRotator() {
   }, [slides.length]);
 
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0 w-full h-full">
       <div className="relative w-full h-full">
         {slides.map((s, i) => {
           const isActive = i === index;
           return (
             <div
               key={s.baseName}
-              className={`absolute inset-0 transition-opacity duration-700 ${
-                isActive ? "opacity-100" : "opacity-0"
+              className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
+                isActive ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
             >
               <Image
@@ -43,7 +43,7 @@ export default function HeroRotator() {
                 alt={s.alt}
                 fill
                 sizes="100vw"
-                priority={isActive}
+                priority={isActive && i === 0}
                 className="object-cover"
               />
             </div>
