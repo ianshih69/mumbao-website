@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import OverlayCard from "@/components/OverlayCard";
 
 const IMAGES = [
   "/images/page3/page3-1.webp",
@@ -101,9 +102,13 @@ export default function LatestNewsSection() {
               className="flex transition-transform duration-500 ease-out"
               style={{ transform: `translateX(-${translatePct}%)` }}
             >
-              {IMAGES.map((src) => (
+              {IMAGES.map((src, idx) => (
                 <div key={src} style={{ width: `${100 / visible}%` }} className="shrink-0 px-2 md:px-3">
-                  <div className="relative w-full aspect-[86/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
+                  <OverlayCard
+                    href="/news"
+                    ariaLabel={`詳細內容：最新消息第 ${idx + 1} 張`}
+                    className="relative w-full aspect-[86/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10"
+                  >
                     <img
                       src={src}
                       alt="最新消息"
@@ -111,7 +116,7 @@ export default function LatestNewsSection() {
                       decoding="async"
                       className="w-full h-full object-cover"
                     />
-                  </div>
+                  </OverlayCard>
                 </div>
               ))}
             </div>
