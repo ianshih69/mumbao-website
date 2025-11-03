@@ -125,3 +125,14 @@ body {
 .dog-idle-anim {
   animation: none;
 }
+
+/* iOS/行動裝置：避免 fixed 背景與重繪成本 */
+@media (max-width: 768px) {
+  .bg-fixed, .bg-attachment-fixed { background-attachment: scroll !important; }
+
+  /* 大區塊滾出視口就先略過繪製，降低重排重繪 */
+  .section, .page-block { content-visibility: auto; contain-intrinsic-size: 1px 1000px; }
+}
+
+/* 給固定在全螢幕的圖層（canvas/特效）使用，啟用 GPU 合成 */
+.fixed-layer { position: fixed; inset: 0; pointer-events: none; will-change: transform; transform: translateZ(0); }
