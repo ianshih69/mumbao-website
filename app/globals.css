@@ -1,19 +1,6 @@
 @import "tailwindcss";
 
 /* ===== 主題色系 (美拉德系) ===== */
-/*
-:root {
-  --bg-main: #F3E5D0;       
-  --bg-card: #FFF7E9;       
-  --bg-header: #EED8BF;     
-  --text-main: #2F1F14;     
-  --title-main: #8B5A2B;    
-  --border-main: #4A3A27;   
-  --accent-main: #C97A2B;   
-  --tag-bg: #F9EDCC;        
-  --tag-text: #6B4E2E;      
-}
-*/
 :root {
   --bg-main: #B97233;       /* 主背景：焦糖橘 */
   --bg-card: #EED3B2;       /* 卡片底：奶焦色 */
@@ -25,8 +12,6 @@
   --tag-bg: #F8E2C1;        /* 標籤底：奶霜蜂蜜 */
   --tag-text: #5A3412;      /* 標籤文字：咖啡棕 */
 }
-
-
 
 @theme inline {
   --color-background: var(--bg-main);
@@ -105,6 +90,15 @@ body {
   0%, 100% { transform: translateY(0px); }
   50%      { transform: translateY(-6px); }
 }
+
+@keyframes pulse-slow {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 5s ease-in-out infinite;
+}
+
 
 /* ========== 保險用 class ========== */
 /* 用 className 而不是 Tailwind 的 animate-[...] 寫法，
