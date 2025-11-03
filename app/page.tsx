@@ -68,11 +68,13 @@ export default function Home() {
               overflow-hidden
               shadow-[0_8px_24px_rgba(0,0,0,0.2)]
             ">
-              <Image
-                src="/images/page1.jpg"
+              <img
+                src="/images/page2/page2-1280.webp"
+                srcSet="/images/page2/page2-360.webp 360w, /images/page2/page2-720.webp 720w, /images/page2/page2-1280.webp 1280w, /images/page2/page2-1600.webp 1920w"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 alt="關於我們"
-                width={800}
-                height={600}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-auto object-cover"
               />
             </div>
