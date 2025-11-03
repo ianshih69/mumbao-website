@@ -8,6 +8,7 @@ import Image from "next/image";
 import HeroRotator from "@/components/HeroRotator";
 import Link from "next/link";
 import { rooms } from "@/data/rooms";
+import Page4TwoUp from "@/components/Page4TwoUp";
 
 export default function Home() {
 
@@ -104,8 +105,10 @@ export default function Home() {
       {/* [3] 最新消息 */}
       <LatestNewsSection />
 
+      {/* [4] 兩圖並排輪播（每 3 秒換一組） */}
+      <Page4TwoUp />
 
-      {/* [4] 房型介紹（上方分隔線，不滿版） */}
+      {/* [5] 房型介紹（上方分隔線，不滿版） */}
       <section className="bg-[#A4835E] py-16 md:py-24">
         {/* 分隔線，對齊內容寬度，不全螢幕 */}
         <div className="max-w-6xl mx-auto h-px bg-white/50 mb-12 px-4"></div>
@@ -139,7 +142,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* [5] 線上訂房 CTA */}
+      {/* [6] 線上訂房 CTA */}
       <section className="bg-[var(--bg-card)] py-16 md:py-24">
         <div className="mx-auto max-w-4xl px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-normal tracking-[0.15em] text-[var(--title-main)] mb-4 text-center">
