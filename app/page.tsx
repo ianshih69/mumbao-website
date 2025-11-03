@@ -62,7 +62,6 @@ export default function Home() {
           {/* 左邊：圖片卡片 */}
           <div className="md:w-1/2 w-full">
             <div className="
-              rounded-xl
               border border-[var(--border-main)]/40
               bg-[var(--bg-card)]
               overflow-hidden
