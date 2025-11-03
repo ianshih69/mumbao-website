@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import RoomCard from "@/components/RoomCard";
 import LatestNewsSection from "@/components/LatestNewsSection";
 import Image from "next/image";
+import HeroRotator from "@/components/HeroRotator";
 import Link from "next/link";
 import { rooms } from "@/data/rooms";
 
@@ -18,13 +19,7 @@ export default function Home() {
       {/* [1] Hero Section */}
       <section className="relative min-h-[70vh] flex items-end">
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/page1.jpg"
-            alt="MUMBAO Stay Hero"
-            fill
-            className="object-cover"
-            priority
-          />
+          <HeroRotator />
           {/* 底部深色半透明遮罩 */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         </div>
