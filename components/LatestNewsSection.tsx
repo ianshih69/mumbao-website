@@ -11,7 +11,7 @@ const IMAGES = [
 export default function LatestNewsSection() {
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(1); // 1 on mobile, up to 3 on desktop
-  const timerRef = useRef<number | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   const total = useMemo(() => IMAGES.length, []);
 
@@ -26,25 +26,45 @@ export default function LatestNewsSection() {
   }, []);
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setCurrent((c) => {
-        const maxStart = Math.max(0, total - visible);
-        return c < maxStart ? c + 1 : 0; // 循環回到開頭，不會出現空白
-      });
-    }, 3000);
-    return () => window.clearInterval(interval);
+    const setupTimer = () => {
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+      intervalRef.current = window.setInterval(() => {
+        setCurrent((c) => {
+          const maxStart = Math.max(0, total - visible);
+          return c < maxStart ? c + 1 : 0; // 循環回到開頭，不會出現空白
+        });
+      }, 3000);
+    };
+    setupTimer();
+    return () => {
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+    };
   }, [visible, total]);
 
-  const goPrev = () =>
+  const restartTimer = () => {
+    if (intervalRef.current) window.clearInterval(intervalRef.current);
+    intervalRef.current = window.setInterval(() => {
+      setCurrent((c) => {
+        const maxStart = Math.max(0, total - visible);
+        return c < maxStart ? c + 1 : 0;
+      });
+    }, 3000);
+  };
+
+  const goPrev = () => {
     setCurrent((c) => {
       const maxStart = Math.max(0, total - visible);
       return Math.max(0, Math.min(maxStart, c - 1)); // 最多停在第一頁
     });
-  const goNext = () =>
+    restartTimer(); // 手動操作後重新計時
+  };
+  const goNext = () => {
     setCurrent((c) => {
       const maxStart = Math.max(0, total - visible);
       return Math.max(0, Math.min(maxStart, c + 1)); // 最多停在最後一頁
     });
+    restartTimer(); // 手動操作後重新計時
+  };
 
   // Track translate percentage based on visible slots
   const translatePct = (current * 100) / visible;
@@ -83,7 +103,7 @@ export default function LatestNewsSection() {
             >
               {IMAGES.map((src) => (
                 <div key={src} style={{ width: `${100 / visible}%` }} className="shrink-0 px-2 md:px-3">
-                  <div className="relative w-full aspect-[86/100] overflow-hidden rounded-xl border border-[var(--border-main)]/40 bg-black/10">
+                  <div className="relative w-full aspect-[86/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
                     <img
                       src={src}
                       alt="最新消息"
