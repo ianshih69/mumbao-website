@@ -26,18 +26,25 @@ export default function LatestNewsSection() {
   }, []);
 
   useEffect(() => {
-    if (visible < 3) {
-      if (timerRef.current) cancelAnimationFrame(timerRef.current);
-      return;
-    }
     const interval = window.setInterval(() => {
-      setCurrent((c) => (c + 1) % total);
+      setCurrent((c) => {
+        const maxStart = Math.max(0, total - visible);
+        return c < maxStart ? c + 1 : 0; // 循環回到開頭，不會出現空白
+      });
     }, 3000);
     return () => window.clearInterval(interval);
   }, [visible, total]);
 
-  const goPrev = () => setCurrent((c) => (c - 1 + total) % total);
-  const goNext = () => setCurrent((c) => (c + 1) % total);
+  const goPrev = () =>
+    setCurrent((c) => {
+      const maxStart = Math.max(0, total - visible);
+      return Math.max(0, Math.min(maxStart, c - 1)); // 最多停在第一頁
+    });
+  const goNext = () =>
+    setCurrent((c) => {
+      const maxStart = Math.max(0, total - visible);
+      return Math.max(0, Math.min(maxStart, c + 1)); // 最多停在最後一頁
+    });
 
   // Track translate percentage based on visible slots
   const translatePct = (current * 100) / visible;
@@ -55,7 +62,7 @@ export default function LatestNewsSection() {
             type="button"
             aria-label="上一張"
             onClick={goPrev}
-            className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/45"
+            className="flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/45"
           >
             ‹
           </button>
@@ -63,7 +70,7 @@ export default function LatestNewsSection() {
             type="button"
             aria-label="下一張"
             onClick={goNext}
-            className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/45"
+            className="flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/45"
           >
             ›
           </button>
@@ -76,7 +83,7 @@ export default function LatestNewsSection() {
             >
               {IMAGES.map((src) => (
                 <div key={src} style={{ width: `${100 / visible}%` }} className="shrink-0 px-2 md:px-3">
-                  <div className="relative w-full aspect-[6/5] overflow-hidden rounded-xl border border-[var(--border-main)]/40 bg-black/10">
+                  <div className="relative w-full aspect-[86/100] overflow-hidden rounded-xl border border-[var(--border-main)]/40 bg-black/10">
                     <img
                       src={src}
                       alt="最新消息"
