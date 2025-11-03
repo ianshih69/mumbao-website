@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import OverlayCard from "@/components/OverlayCard";
 
 const IMAGES = [
@@ -109,12 +110,12 @@ export default function LatestNewsSection() {
                     ariaLabel={`詳細內容：最新消息第 ${idx + 1} 張`}
                     className="relative w-full aspect-[86/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10"
                   >
-                    <img
+                    <Image
                       src={src}
                       alt="最新消息"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover"
                     />
                   </OverlayCard>
                 </div>

@@ -32,7 +32,7 @@ export default function OverlayCard({
       {/* 圖片本體 */}
       <div
         className={[
-          "transition-transform duration-300 will-change-transform",
+          "relative w-full h-full transition-transform duration-300 will-change-transform",
           zoomOnHover
             ? "group-hover:scale-[1.02] group-focus:scale-[1.02] group-focus-within:scale-[1.02]"
             : "",

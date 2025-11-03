@@ -63,19 +63,19 @@ export default function Home() {
           {/* 左邊：圖片卡片 */}
           <div className="md:w-1/2 w-full">
             <div className="
+              relative
               border border-[var(--border-main)]/40
               bg-[var(--bg-card)]
               overflow-hidden
               shadow-[0_8px_24px_rgba(0,0,0,0.2)]
+              aspect-[4/3]
             ">
-              <img
-                src="/images/page2/page2-1280.webp"
-                srcSet="/images/page2/page2-360.webp 360w, /images/page2/page2-720.webp 720w, /images/page2/page2-1280.webp 1280w, /images/page2/page2-1600.webp 1920w"
-                sizes="(min-width: 768px) 50vw, 100vw"
+              <Image
+                src="/images/page2/page2.webp"
                 alt="關於我們"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-auto object-cover"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
               />
             </div>
           </div>

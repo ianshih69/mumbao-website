@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 // Four groups, each with two images side-by-side
 const GROUPS = [
@@ -27,33 +28,43 @@ export default function Page4TwoUp() {
           {/* Left image: width:height = 0.78 : 1 (height ≈ 1.28 x width) */}
           <div className="relative w-full aspect-[78/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
             {GROUPS.map((g, i) => (
-              <img
+              <div
                 key={`left-${i}`}
-                src={g.left}
-                alt="圖頁左圖"
-                loading={i === idx ? "eager" : "lazy"}
-                decoding="async"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                className={`absolute inset-0 transition-opacity duration-300 ${
                   i === idx ? "opacity-100" : "opacity-0"
                 }`}
-              />)
-            )}
+              >
+                <Image
+                  src={g.left}
+                  alt="圖頁左圖"
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  priority={i === idx}
+                  className="object-cover"
+                />
+              </div>
+            ))}
           </div>
 
           {/* Right image: width:height = 1.66 : 1 (width ≈ 1.66 x height) */}
           <div className="relative w-full aspect-[166/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
             {GROUPS.map((g, i) => (
-              <img
+              <div
                 key={`right-${i}`}
-                src={g.right}
-                alt="圖頁右圖"
-                loading={i === idx ? "eager" : "lazy"}
-                decoding="async"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                className={`absolute inset-0 transition-opacity duration-300 ${
                   i === idx ? "opacity-100" : "opacity-0"
                 }`}
-              />)
-            )}
+              >
+                <Image
+                  src={g.right}
+                  alt="圖頁右圖"
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  priority={i === idx}
+                  className="object-cover"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>
