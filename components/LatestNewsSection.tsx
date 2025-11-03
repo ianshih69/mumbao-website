@@ -19,7 +19,7 @@ export default function LatestNewsSection() {
   useEffect(() => {
     const apply = () => {
       const w = window.innerWidth;
-      setVisible(w >= 1024 ? 3 : 1);
+      setVisible(w >= 1024 ? 3 : w >= 768 ? 2 : 1);
     };
     apply();
     window.addEventListener("resize", apply);
