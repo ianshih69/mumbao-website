@@ -147,7 +147,7 @@ export default function Home() {
       <section className="bg-[var(--bg-card)] py-16 md:py-24">
         <div className="mx-auto max-w-4xl px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-normal tracking-[0.15em] text-[var(--title-main)] mb-4 text-center">
-            線上訂房
+            線上訂房1
           </h2>
           <p className="text-[var(--text-main)] leading-7 mb-8 max-w-2xl mx-auto text-sm md:text-base">
             想直接下訂？加入 LINE 詢問空房或索取官方訂房表。

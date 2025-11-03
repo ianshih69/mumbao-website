@@ -2,108 +2,105 @@
 import { useEffect, useRef } from "react";
 
 export default function FlyingMascot() {
-  const mascotRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  // 你可以調整「活動區域」的邊界：
-  // x 在 5vw ~ 75vw 之間亂飛
-  // y 在 30vh ~ 75vh 之間亂飛
-  const MIN_X = 5;   // vw
-  const MAX_X = 75;  // vw
-  const MIN_Y = 30;  // vh
-  const MAX_Y = 75;  // vh
+  // 可調參數
+  const TRAVEL_MS = 5200; // 每段飛行時間
+  const EASE = "cubic-bezier(0.25, 0.1, 0.25, 1)"; // 慢進慢出但非常平順
+  // 活動範圍（以視口像素 px 計算；避免貼邊）
+  const PADDING_X = 24;
+  const PADDING_TOP = 80;   // 避免碰到網站導覽列/按鈕
+  const PADDING_BOTTOM = 120;
 
-  // 每次移動花多久飛到下一個點（毫秒）
-  const TRAVEL_TIME = 5000; // 5秒一段，越大=飛比較慢、越優雅
+  // 取得穩定的視口大小（iOS 用 visualViewport，其他退回 innerWidth/innerHeight）
+  const getViewport = () => {
+    const vv = (typeof window !== "undefined" && (window as any).visualViewport) || null;
+    const width = vv?.width ?? window.innerWidth ?? document.documentElement.clientWidth;
+    const height = vv?.height ?? window.innerHeight ?? document.documentElement.clientHeight;
+    return { width, height };
+  };
+
+  // 在安全區間內取亂數目標
+  const pickTarget = () => {
+    const { width, height } = getViewport();
+    const x = PADDING_X + Math.random() * Math.max(1, width - PADDING_X * 2);
+    const y =
+      PADDING_TOP + Math.random() * Math.max(1, height - (PADDING_TOP + PADDING_BOTTOM));
+    return { x, y };
+  };
 
   useEffect(() => {
-    const el = mascotRef.current;
+    const el = ref.current;
     if (!el) return;
 
-    let frameId: number;
-    let lastTs = performance.now();
+    // 基本樣式（交給合成器處理）
+    el.style.willChange = "transform";
+    el.style.backfaceVisibility = "hidden";
+    el.style.transform = "translate3d(10px, 10px, 0)";
+    el.style.transitionProperty = "transform";
 
-    // 目前位置（用vw/vh的百分比表示）
-    let currentX = 10;
-    let currentY = 70;
+    let cancel = false;
+    let timer: number | null = null;
 
-    // 目標位置
-    let targetX = randomBetween(MIN_X, MAX_X);
-    let targetY = randomBetween(MIN_Y, MAX_Y);
+    const moveOnce = () => {
+      if (cancel) return;
+      const { x, y } = pickTarget();
 
-    // 我們要記錄這一段旅程開始的時間點
-    let segmentStartTs = performance.now();
+      // 設定這一段的過渡（時間＋曲線）
+      el.style.transitionDuration = `${TRAVEL_MS}ms`;
+      el.style.transitionTimingFunction = EASE;
 
-    function randomBetween(min: number, max: number) {
-      return min + Math.random() * (max - min);
-    }
+      // 只改一次 transform，交給 CSS transition 平滑補間（更省幀，手機最穩）
+      el.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
 
-    function pickNewTarget() {
-      targetX = randomBetween(MIN_X, MAX_X);
-      targetY = randomBetween(MIN_Y, MAX_Y);
-      segmentStartTs = performance.now();
-    }
+      // 到站後再挑下一個目標
+      timer = window.setTimeout(moveOnce, TRAVEL_MS);
+    };
 
-    function animate(now: number) {
-      const dt = now - lastTs;
-      lastTs = now;
+    // 視口發生變化（iOS 工具列收放），下一段重新取目標即可
+    const onResize = () => {
+      // 不打斷當前過渡，等下一段再根據新視口移動
+      // 若要立刻校正，可取消下一行註解：
+      // moveOnce();
+    };
 
-      // 我們算這一段旅程走了多少比例
-      const segElapsed = now - segmentStartTs;
-      let t = segElapsed / TRAVEL_TIME; // 0 -> 1
+    window.addEventListener("resize", onResize);
+    (window as any).visualViewport?.addEventListener?.("resize", onResize);
 
-      if (t >= 1) {
-        // 抵達了，直接把 current 放到 target
-        currentX = targetX;
-        currentY = targetY;
-        // 換下一個目標
-        pickNewTarget();
-        t = 0;
-      }
-
-      // 用平滑補間 (ease in-out-ish)
-      // 我們做一個簡單平滑函數讓路徑更柔：smoothstep
-      const smoothT = t * t * (3 - 2 * t);
-
-      // 要往 target 飛，先計算這一段理論上的中間位置
-      const nextX = currentX + (targetX - currentX) * smoothT;
-      const nextY = currentY + (targetY - currentY) * smoothT;
-
-      // 更新 DOM transform
-      if (mascotRef.current) {
-        mascotRef.current.style.transform = `translate3d(${nextX}vw, ${nextY}vh, 0)`;
-      }
-
-      frameId = requestAnimationFrame(animate);
-    }
-
-    frameId = requestAnimationFrame(animate);
+    // 啟動
+    moveOnce();
 
     return () => {
-      cancelAnimationFrame(frameId);
+      cancel = true;
+      if (timer) window.clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+      (window as any).visualViewport?.removeEventListener?.("resize", onResize);
     };
   }, []);
 
   return (
     <div
-      ref={mascotRef}
-      className="fixed top-0 left-0 z-20 pointer-events-none will-change-transform"
-      style={{
-        transform: "translate3d(10vw,70vh,0)",
-      }}
+      ref={ref}
+      className="fixed top-0 left-0 z-20 pointer-events-none"
+      style={{ transform: "translate3d(10px, 10px, 0)" }}
     >
       <div className="relative w-32 sm:w-40 md:w-48">
-        {/* 雲：慢速上下飄，保留可愛感 */}
+        {/* 雲：輕微上下漂，視覺細膩 */}
         <img
           src="/images/cloud.png"
           alt="cloud"
           className="block w-[65%] h-auto mx-auto animate-pulse-slow"
+          loading="lazy"
+          decoding="async"
         />
-        {/* 角色：站在雲上 */}
+        {/* 角色站在雲上 */}
         <img
           src="/images/dog.png"
           alt="dog"
           className="absolute left-1/2 bottom-[50%] w-[50%] h-auto"
           style={{ transform: "translateX(-50%)" }}
+          loading="lazy"
+          decoding="async"
         />
       </div>
     </div>
