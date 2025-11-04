@@ -87,7 +87,7 @@ export default function Home() {
       <LatestNewsSection />
 
       {/* 第三圖頁與第四圖頁之間的白色分隔線 */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 h-[1px] bg-white/50 mb-0"></div>
+      <div className="relative z-10 max-w-6xl mx-auto px-4 h-[1px] bg-white/50 mb-0 -mt-[30px] md:-mt-[50px]"></div>
 
       {/* [4] 房型馬賽克輪播 */}
       <RoomsMosaic />

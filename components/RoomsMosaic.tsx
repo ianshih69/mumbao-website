@@ -71,13 +71,13 @@ export default function RoomsMosaic() {
         </div>
 
         {/* 移動端：房型標題、四個點置中 */}
-        <div className="md:hidden mb-2">
+        <div className="md:hidden mb-2 -mt-10">
           {/* 房型標題 */}
           <h2 className="text-center text-2xl font-normal tracking-[0.15em] text-white mb-2">
             房型
           </h2>
           {/* 四個點置中 */}
-          <div className="flex items-center justify-center gap-1.5">
+          <div className="flex items-center justify-center gap-1.5 mt-2.5">
             {GROUPS.map((_, i) => (
               <button
                 key={i}
