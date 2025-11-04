@@ -6,6 +6,7 @@ import LatestNewsSection from "@/components/LatestNewsSection";
 import Image from "next/image";
 import HeroRotator from "@/components/HeroRotator";
 import RoomsMosaic from "@/components/RoomsMosaic";
+import Page5Booking from "@/components/Page5Booking";
 
 export default function Home() {
 
@@ -93,7 +94,10 @@ export default function Home() {
         <RoomsMosaic />
       </div>
 
-      {/* [5] 線上訂房 CTA */}
+      {/* [5] 第五圖頁：線上訂房 */}
+      <Page5Booking />
+
+      {/* [6] 線上訂房 CTA */}
       <section className="bg-[var(--bg-card)] py-16 md:py-24">
         <div className="mx-auto max-w-4xl px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-normal tracking-[0.15em] text-[var(--title-main)] mb-4 text-center">
