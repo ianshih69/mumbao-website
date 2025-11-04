@@ -7,11 +7,12 @@ export default function Page5Booking() {
     <section className="relative w-full pb-16 md:pb-24 bg-[#A4835E] -mt-[46px] md:-mt-[54px]">
       {/* 對齊第四圖頁的內容寬度 */}
       <div className="mx-auto max-w-6xl px-4">
-        {/* 外層容器：3:1 比例，對齊第四圖頁的圖片區域，添加 border 確保對齊 */}
+        {/* 外層容器：對齊第四圖頁的圖片區域，添加 border 確保對齊 */}
         {/* 移動端和桌面端都需要對齊第四圖頁的兩圖+gap區域，移動端和桌面端都使用 gap-6 (24px) */}
         {/* 移動端：grid-cols-2 兩欄各 50%，gap-6 在內部，所以 grid 容器總寬度是 100% */}
         {/* 桌面端：md:grid-cols-[40%_60%]，gap-6 在內部，所以 grid 容器總寬度是 100% + gap = 100% + 24px */}
-        <div className="relative w-full md:w-[calc(100%+1.5rem)] aspect-[3/1] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
+        {/* 移動端：aspect-[3/2] 讓高度更正常，桌面端：aspect-[3/1] 維持原本比例 */}
+        <div className="relative w-full md:w-[calc(100%+1.5rem)] aspect-[3/2] md:aspect-[3/1] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
           {/* 背景圖片 */}
           <img
             src="/images/page5/page5.webp"
