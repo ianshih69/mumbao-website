@@ -104,7 +104,7 @@ export default function LatestNewsSection() {
               style={{ transform: `translateX(-${translatePct}%)` }}
             >
               {NEWS_ITEMS.map((item, idx) => (
-                <div key={item.image} style={{ width: `${100 / visible}%` }} className={`shrink-0 flex flex-col ${idx === 0 ? 'pl-0 pr-2 md:pr-3' : idx === NEWS_ITEMS.length - 1 ? 'pl-2 md:pl-3 pr-0' : 'px-2 md:px-3'}`}>
+                <div key={item.image} style={{ width: `${100 / visible}%` }} className="shrink-0 flex flex-col px-2 md:px-3">
                   {/* 圖片容器：固定高度 */}
                   <div className="relative w-full aspect-[7/8] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 shrink-0">
                     <OverlayCard
