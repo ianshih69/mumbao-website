@@ -57,7 +57,7 @@ export default function RoomsMosaic() {
           </div>
 
           {/* 上中：房型標題（絕對居中） */}
-          <h2 className="absolute left-1/2 -translate-x-1/2 -translate-y-[40px] text-2xl md:text-3xl font-normal tracking-[0.15em] text-white">
+          <h2 className="absolute left-1/2 -translate-x-1/2 -translate-y-[20px] md:-translate-y-[40px] text-2xl md:text-3xl font-normal tracking-[0.15em] text-white">
             房型
           </h2>
 
