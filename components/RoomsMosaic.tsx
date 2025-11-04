@@ -132,7 +132,7 @@ export default function RoomsMosaic() {
         </div>
 
         {/* 移動端：更多+連結在第二張圖下方，置中 */}
-        <div className="md:hidden flex justify-center mt-2">
+        <div className="md:hidden flex justify-center mt-2.5">
           <Link
             href="/rooms"
             className="text-white hover:opacity-80 transition-opacity text-sm"

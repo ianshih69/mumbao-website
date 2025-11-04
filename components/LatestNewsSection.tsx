@@ -133,7 +133,7 @@ export default function LatestNewsSection() {
           </div>
         </div>
 
-        <div className="text-center mt-0 md:mt-10">
+        <div className="text-center mt-2.5 md:mt-10">
           <a href="/news" className="inline-flex items-center gap-1 text-white leading-none text-sm md:text-base">
             更多 ＋
           </a>
