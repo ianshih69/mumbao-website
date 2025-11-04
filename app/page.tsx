@@ -105,8 +105,13 @@ export default function Home() {
       {/* [3] 最新消息 */}
       <LatestNewsSection />
 
+      {/* 第三圖頁與第四圖頁之間的白色分隔線 */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 h-[1px] bg-white/50 -mt-5 mb-0"></div>
+
       {/* [4] 房型馬賽克輪播 */}
-      <RoomsMosaic />
+      <div className="-mt-5">
+        <RoomsMosaic />
+      </div>
 
       {/* [5] 房型介紹（上方分隔線，不滿版） */}
       <section className="bg-[#A4835E] py-16 md:py-24">
