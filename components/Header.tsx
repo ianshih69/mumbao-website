@@ -38,27 +38,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* 右：搜尋 / 語言 */}
+          {/* 右：語言 */}
           <div className="flex items-center justify-end gap-4">
-            <button
-              className="text-[var(--text-main)] hover:opacity-70"
-              aria-label="搜尋"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-
             <button
               className="text-[var(--text-main)] hover:opacity-70"
               aria-label="語言"
@@ -98,24 +79,6 @@ export default function Header() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <button
-              className="text-[var(--text-main)] hover:opacity-70"
-              aria-label="搜尋"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
             <span className="text-xs text-[var(--text-main)] whitespace-nowrap">
               Tw|En
             </span>
