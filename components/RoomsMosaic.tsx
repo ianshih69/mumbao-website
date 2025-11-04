@@ -70,8 +70,8 @@ export default function RoomsMosaic() {
           </Link>
         </div>
 
-        {/* 兩欄圖片：左邊直式（3:4），右邊橫式（5:3），高度一致（右圖決定高度） */}
-        <div className="grid grid-cols-1 md:grid-cols-[40%_60%] gap-6 items-stretch">
+        {/* 兩欄圖片：左邊直式（3:4），右邊橫式（5:3），高度一致（右圖決定高度），移動端和桌面端都並排顯示 */}
+        <div className="grid grid-cols-2 md:grid-cols-[40%_60%] gap-6 items-stretch">
           {/* Left image: 3:4 直式（高於寬），移動端與右圖高度一致，桌面端與右圖高度一致 */}
           <div className="relative w-full aspect-[5/3] md:aspect-[3/4] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 rooms-mosaic-left">
             {GROUPS.map((g, i) => (

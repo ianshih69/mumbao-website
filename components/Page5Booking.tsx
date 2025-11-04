@@ -4,11 +4,12 @@ import Link from "next/link";
 
 export default function Page5Booking() {
   return (
-    <section className="relative w-full py-16 md:py-24 bg-[#A4835E]">
+    <section className="relative w-full pb-16 md:pb-24 bg-[#A4835E] -mt-[66px] md:-mt-[74px]">
       {/* 對齊第四圖頁的內容寬度 */}
       <div className="mx-auto max-w-6xl px-4">
-        {/* 外層容器：3:1 比例，往上移 140px，對齊第四圖頁的圖片區域，添加 border 確保對齊 */}
-        <div className="relative w-full aspect-[3/1] overflow-hidden -mt-[140px] border border-[var(--border-main)]/40 bg-black/10">
+        {/* 外層容器：3:1 比例，對齊第四圖頁的圖片區域，添加 border 確保對齊 */}
+        {/* 移動端和桌面端都需要對齊第四圖頁的兩圖+gap區域，移動端和桌面端都使用 gap-6 (24px) */}
+        <div className="relative w-[calc(100%+1.5rem)] aspect-[3/1] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
           {/* 背景圖片 */}
           <img
             src="/images/page5/page5.webp"
