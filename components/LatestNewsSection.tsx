@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import OverlayCard from "@/components/OverlayCard";
 
-const IMAGES = [
-  "/images/page3/page3-1.webp",
-  "/images/page3/page3-2.webp",
-  "/images/page3/page3-3.webp",
-  "/images/page3/page3-4.webp",
-  "/images/page3/page3-5.webp",
+const NEWS_ITEMS = [
+  { image: "/images/page3/page3-1.webp", title: "灣臥・世界百大建築", date: "2022.11.08" },
+  { image: "/images/page3/page3-2.webp", title: "灣臥生日獻禮", date: "2025.08.13" },
+  { image: "/images/page3/page3-3.webp", title: "灣臥・晚餐", date: "2025.08.01" },
+  { image: "/images/page3/page3-4.webp", title: "最新消息標題", date: "2025.03.15" },
+  { image: "/images/page3/page3-5.webp", title: "最新消息標題", date: "2025.03.10" },
 ];
 
 export default function LatestNewsSection() {
@@ -15,7 +15,7 @@ export default function LatestNewsSection() {
   const [visible, setVisible] = useState(1); // 1 on mobile, up to 3 on desktop
   const intervalRef = useRef<number | null>(null);
 
-  const total = useMemo(() => IMAGES.length, []);
+  const total = useMemo(() => NEWS_ITEMS.length, []);
 
   useEffect(() => {
     const apply = () => {
@@ -74,7 +74,7 @@ export default function LatestNewsSection() {
   return (
     <section className="bg-[#A4835E] py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="text-white font-normal text-left tracking-[0.4em] text-xl md:text-2xl mb-12 md:mb-14">
+        <h2 className="text-white font-normal text-center tracking-[0.4em] text-xl md:text-2xl mb-12 md:mb-14">
           最 新 消 息
         </h2>
 
@@ -100,31 +100,40 @@ export default function LatestNewsSection() {
           {/* Carousel viewport */}
           <div className="overflow-hidden">
             <div
-              className="flex transition-transform duration-500 ease-out"
+              className="flex transition-transform duration-500 ease-out items-stretch"
               style={{ transform: `translateX(-${translatePct}%)` }}
             >
-              {IMAGES.map((src, idx) => (
-                <div key={src} style={{ width: `${100 / visible}%` }} className={`shrink-0 ${idx === 0 ? 'pl-0 pr-2 md:pr-3' : idx === IMAGES.length - 1 ? 'pl-2 md:pl-3 pr-0' : 'px-2 md:px-3'}`}>
-                  <OverlayCard
-                    href="/news"
-                    ariaLabel={`詳細內容：最新消息第 ${idx + 1} 張`}
-                    className="relative w-full aspect-[7/8] overflow-hidden border border-[var(--border-main)]/40 bg-black/10"
-                  >
-                    <Image
-                      src={src}
-                      alt="最新消息"
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  </OverlayCard>
+              {NEWS_ITEMS.map((item, idx) => (
+                <div key={item.image} style={{ width: `${100 / visible}%` }} className={`shrink-0 flex flex-col ${idx === 0 ? 'pl-0 pr-2 md:pr-3' : idx === NEWS_ITEMS.length - 1 ? 'pl-2 md:pl-3 pr-0' : 'px-2 md:px-3'}`}>
+                  {/* 圖片容器：固定高度 */}
+                  <div className="relative w-full aspect-[7/8] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 shrink-0">
+                    <OverlayCard
+                      href="/news"
+                      ariaLabel={`詳細內容：${item.title}`}
+                      className="relative w-full h-full"
+                      zoomOnHover={false}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    </OverlayCard>
+                  </div>
+                  {/* 圖片下方文字：標題和日期（固定高度確保位置一致） */}
+                  <div className="mt-3 text-white h-[3.5rem] md:h-[4rem] flex flex-col justify-start">
+                    <h3 className="text-sm md:text-base font-normal leading-tight line-clamp-2">{item.title}</h3>
+                    <p className="text-xs md:text-sm text-white/70 mt-1">{item.date}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="text-left mt-10">
+        <div className="text-center mt-10">
           <a href="/news" className="inline-flex items-center gap-1 text-white leading-none text-sm md:text-base">
             更多 ＋
           </a>
