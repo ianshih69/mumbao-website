@@ -5,10 +5,10 @@ import Link from "next/link";
 
 // Four groups, each with two images side-by-side
 const GROUPS = [
-  { left: "/images/page4/page4-1-1.jpg", right: "/images/page4/page4-1-2.jpg" },
-  { left: "/images/page4/page4-2-1.jpg", right: "/images/page4/page4-2-2.jpg" },
-  { left: "/images/page4/page4-3-1.jpg", right: "/images/page4/page4-3-2.jpg" },
-  { left: "/images/page4/page4-4-1.jpg", right: "/images/page4/page4-4-2.jpg" },
+  { left: "/images/page4/page4-1-1.webp", right: "/images/page4/page4-1-2.webp" },
+  { left: "/images/page4/page4-2-1.webp", right: "/images/page4/page4-2-2.webp" },
+  { left: "/images/page4/page4-3-1.webp", right: "/images/page4/page4-3-2.webp" },
+  { left: "/images/page4/page4-4-1.webp", right: "/images/page4/page4-4-2.webp" },
 ];
 
 export default function RoomsMosaic() {
