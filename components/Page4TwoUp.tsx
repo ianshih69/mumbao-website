@@ -24,46 +24,36 @@ export default function Page4TwoUp() {
   return (
     <section className="bg-[var(--bg-card)] py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left image: width:height = 0.78 : 1 (height ≈ 1.28 x width) */}
-          <div className="relative w-full aspect-[78/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          {/* Left image: 3:4 直式 */}
+          <div className="relative w-full aspect-[3/4] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
             {GROUPS.map((g, i) => (
-              <div
+              <img
                 key={`left-${i}`}
-                className={`absolute inset-0 transition-opacity duration-300 ${
+                src={g.left}
+                alt="圖頁左圖"
+                loading={i === idx ? "eager" : "lazy"}
+                decoding="async"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                   i === idx ? "opacity-100" : "opacity-0"
                 }`}
-              >
-                <Image
-                  src={g.left}
-                  alt="圖頁左圖"
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  priority={i === idx}
-                  className="object-cover"
-                />
-              </div>
+              />
             ))}
           </div>
 
-          {/* Right image: width:height = 1.66 : 1 (width ≈ 1.66 x height) */}
-          <div className="relative w-full aspect-[166/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
+          {/* Right image: 5:3 橫式 */}
+          <div className="relative w-full aspect-[5/3] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
             {GROUPS.map((g, i) => (
-              <div
+              <img
                 key={`right-${i}`}
-                className={`absolute inset-0 transition-opacity duration-300 ${
+                src={g.right}
+                alt="圖頁右圖"
+                loading={i === idx ? "eager" : "lazy"}
+                decoding="async"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                   i === idx ? "opacity-100" : "opacity-0"
                 }`}
-              >
-                <Image
-                  src={g.right}
-                  alt="圖頁右圖"
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  priority={i === idx}
-                  className="object-cover"
-                />
-              </div>
+              />
             ))}
           </div>
         </div>

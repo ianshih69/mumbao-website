@@ -8,7 +8,7 @@ import Image from "next/image";
 import HeroRotator from "@/components/HeroRotator";
 import Link from "next/link";
 import { rooms } from "@/data/rooms";
-import Page4TwoUp from "@/components/Page4TwoUp";
+import RoomsMosaic from "@/components/RoomsMosaic";
 
 export default function Home() {
 
@@ -68,14 +68,14 @@ export default function Home() {
               bg-[var(--bg-card)]
               overflow-hidden
               shadow-[0_8px_24px_rgba(0,0,0,0.2)]
-              aspect-[4/3]
+              aspect-[3/2]
             ">
               <Image
                 src="/images/page2/page2.webp"
                 alt="關於我們"
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
           </div>
@@ -105,8 +105,8 @@ export default function Home() {
       {/* [3] 最新消息 */}
       <LatestNewsSection />
 
-      {/* [4] 兩圖並排輪播（每 3 秒換一組） */}
-      <Page4TwoUp />
+      {/* [4] 房型馬賽克輪播 */}
+      <RoomsMosaic />
 
       {/* [5] 房型介紹（上方分隔線，不滿版） */}
       <section className="bg-[#A4835E] py-16 md:py-24">

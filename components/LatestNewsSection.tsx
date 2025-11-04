@@ -108,14 +108,14 @@ export default function LatestNewsSection() {
                   <OverlayCard
                     href="/news"
                     ariaLabel={`詳細內容：最新消息第 ${idx + 1} 張`}
-                    className="relative w-full aspect-[86/100] overflow-hidden border border-[var(--border-main)]/40 bg-black/10"
+                    className="relative w-full aspect-[7/8] overflow-hidden border border-[var(--border-main)]/40 bg-black/10"
                   >
                     <Image
                       src={src}
                       alt="最新消息"
                       fill
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className="object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   </OverlayCard>
                 </div>
