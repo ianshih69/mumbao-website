@@ -71,14 +71,14 @@ export default function RoomsMosaic() {
         </div>
 
         {/* 兩欄圖片：左邊直式（3:4），右邊橫式（5:3），高度一致（右圖決定高度） */}
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Right image: 5:3 橫式（寬於高），佔60%寬度，決定整體高度 */}
-          <div className="relative w-full md:w-[60%] md:order-2 aspect-[5/3] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
+        <div className="grid grid-cols-1 md:grid-cols-[40%_60%] gap-6 md:items-stretch">
+          {/* Left image: 3:4 直式（高於寬），高度與右圖一致 */}
+          <div className="relative w-full aspect-[3/4] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 rooms-mosaic-left">
             {GROUPS.map((g, i) => (
               <img
-                key={`right-${i}`}
-                src={g.right}
-                alt={`房型圖片 ${i + 1} - 右`}
+                key={`left-${i}`}
+                src={g.left}
+                alt={`房型圖片 ${i + 1} - 左`}
                 loading={i === idx ? "eager" : "lazy"}
                 decoding="async"
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
@@ -88,13 +88,13 @@ export default function RoomsMosaic() {
             ))}
           </div>
 
-          {/* Left image: 3:4 直式（高於寬），高度與右圖一致 */}
-          <div className="relative w-full md:w-[40%] md:order-1 aspect-[3/4] md:aspect-auto overflow-hidden border border-[var(--border-main)]/40 bg-black/10" style={{ height: 'calc((60vw - 1.5rem) * 3 / 5)' }}>
+          {/* Right image: 5:3 橫式（寬於高），佔60%寬度，決定整體高度 */}
+          <div className="relative w-full aspect-[5/3] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
             {GROUPS.map((g, i) => (
               <img
-                key={`left-${i}`}
-                src={g.left}
-                alt={`房型圖片 ${i + 1} - 左`}
+                key={`right-${i}`}
+                src={g.right}
+                alt={`房型圖片 ${i + 1} - 右`}
                 loading={i === idx ? "eager" : "lazy"}
                 decoding="async"
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${

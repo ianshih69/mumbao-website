@@ -136,3 +136,11 @@ body {
 
 /* 給固定在全螢幕的圖層（canvas/特效）使用，啟用 GPU 合成 */
 .fixed-layer { position: fixed; inset: 0; pointer-events: none; will-change: transform; transform: translateZ(0); }
+
+/* 第四圖頁左圖：桌面端移除 aspect ratio，讓高度與右圖一致 */
+@media (min-width: 768px) {
+  .rooms-mosaic-left {
+    aspect-ratio: unset !important;
+    height: 100% !important;
+  }
+}

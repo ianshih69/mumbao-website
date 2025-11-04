@@ -73,8 +73,8 @@ export default function LatestNewsSection() {
 
   return (
     <section className="bg-[#A4835E] py-16 md:py-24">
-      <div className="mx-auto max-w-[1280px] px-4">
-        <h2 className="text-white font-normal text-center tracking-[0.4em] text-xl md:text-2xl mb-12 md:mb-14">
+      <div className="mx-auto max-w-6xl px-4">
+        <h2 className="text-white font-normal text-left tracking-[0.4em] text-xl md:text-2xl mb-12 md:mb-14">
           最 新 消 息
         </h2>
 
@@ -104,7 +104,7 @@ export default function LatestNewsSection() {
               style={{ transform: `translateX(-${translatePct}%)` }}
             >
               {IMAGES.map((src, idx) => (
-                <div key={src} style={{ width: `${100 / visible}%` }} className="shrink-0 px-2 md:px-3">
+                <div key={src} style={{ width: `${100 / visible}%` }} className={`shrink-0 ${idx === 0 ? 'pl-0 pr-2 md:pr-3' : idx === IMAGES.length - 1 ? 'pl-2 md:pl-3 pr-0' : 'px-2 md:px-3'}`}>
                   <OverlayCard
                     href="/news"
                     ariaLabel={`詳細內容：最新消息第 ${idx + 1} 張`}
@@ -124,7 +124,7 @@ export default function LatestNewsSection() {
           </div>
         </div>
 
-        <div className="text-center mt-10">
+        <div className="text-left mt-10">
           <a href="/news" className="inline-flex items-center gap-1 text-white leading-none text-sm md:text-base">
             更多 ＋
           </a>
