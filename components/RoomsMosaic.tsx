@@ -95,11 +95,11 @@ export default function RoomsMosaic() {
         </div>
 
         {/* 兩欄圖片：左邊直式（3:4），右邊橫式（5:3），高度一致（右圖決定高度） */}
-        {/* 移動端：上下堆疊（grid-cols-1），第一張圖高度是第二張圖的 2/3 */}
+        {/* 移動端：上下堆疊（grid-cols-1），第二張圖高度比第一張圖大1/3（3:4比例） */}
         {/* 桌面端：左右並排（md:grid-cols-[40%_60%]） */}
-        <div className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[2fr_3fr] md:grid-rows-none gap-3 md:gap-6 items-stretch">
-          {/* Left image: 3:4 直式（高於寬），移動端高度是第二張的 2/3，桌面端與右圖高度一致 */}
-          <div className="relative w-full min-w-0 aspect-[5/3] md:aspect-[3/4] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 rooms-mosaic-left">
+        <div className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6">
+          {/* Left image: 3:4 直式（高於寬），移動端高度由 grid-rows 控制（3:4比例），桌面端與右圖高度一致 */}
+          <div className="relative w-full min-w-0 aspect-[5/3] md:aspect-[3/4] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 rooms-mosaic-left" style={{ height: '100%' }}>
             {GROUPS.map((g, i) => (
               <img
                 key={`left-${i}`}
@@ -114,8 +114,8 @@ export default function RoomsMosaic() {
             ))}
           </div>
 
-          {/* Right image: 5:3 橫式（寬於高），移動端決定高度，桌面端佔60%寬度 */}
-          <div className="relative w-full min-w-0 aspect-[5/3] overflow-hidden border border-[var(--border-main)]/40 bg-black/10">
+          {/* Right image: 5:3 橫式（寬於高），移動端高度由 grid-rows 控制，桌面端佔60%寬度 */}
+          <div className="relative w-full min-w-0 aspect-[5/3] overflow-hidden border border-[var(--border-main)]/40 bg-black/10" style={{ height: '100%' }}>
             {GROUPS.map((g, i) => (
               <img
                 key={`right-${i}`}
@@ -132,7 +132,7 @@ export default function RoomsMosaic() {
         </div>
 
         {/* 移動端：更多+連結在第二張圖下方，置中 */}
-        <div className="md:hidden flex justify-center -mt-[30px]">
+        <div className="md:hidden flex justify-center mt-2.5">
           <Link
             href="/rooms"
             className="text-white hover:opacity-80 transition-opacity text-sm"

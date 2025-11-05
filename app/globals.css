@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ===== 主題色系 (美拉德系) ===== */
-:root {
+ :root {
   --bg-main: #B97233;       /* 主背景：焦糖橘 */
   --bg-card: #EED3B2;       /* 卡片底：奶焦色 */
   --bg-header: #FAE8D0;     /* Header 背景：奶油米白 */
