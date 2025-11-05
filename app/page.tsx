@@ -95,24 +95,6 @@ export default function Home() {
       {/* [5] 第五圖頁：線上訂房 */}
       <Page5Booking />
 
-      {/* [6] 線上訂房 CTA */}
-      <section className="bg-[var(--bg-card)] py-16 md:py-24">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-normal tracking-[0.15em] text-[var(--title-main)] mb-4 text-center">
-            線上訂房2
-          </h2>
-          <p className="text-[var(--text-main)] leading-7 mb-8 max-w-2xl mx-auto text-sm md:text-base">
-            想直接下訂？加入 LINE 詢問空房或索取官方訂房表。
-          </p>
-          <a
-            href="#booking"
-            className="inline-block px-8 py-4 rounded-full bg-[var(--accent-main)] text-white hover:opacity-90 transition-opacity shadow-lg border border-[var(--border-main)] font-medium text-sm md:text-base"
-          >
-            立即訂房
-          </a>
-        </div>
-      </section>
-
       {/* [6] Footer */}
       <Footer />
     </>
