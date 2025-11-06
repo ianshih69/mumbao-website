@@ -64,17 +64,30 @@ export default function RoomsMosaic() {
     const deltaX = touchStartX.current - currentX;
     const deltaY = touchStartY.current - currentY;
 
+    // 如果已經確定是水平滑動，持續阻止預設行為
+    if (isDragging.current) {
+      e.preventDefault();
+      touchCurrentX.current = currentX;
+      return;
+    }
+
+    // 如果確定是垂直滑動，允許預設行為（不阻止）
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+      // 這是垂直滑動，允許滾動
+      return;
+    }
+
     // 只在確定是水平滑動時才阻止預設行為
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-      if (!isDragging.current) {
-        isDragging.current = true;
-      }
+      isDragging.current = true;
+      // 只阻止水平滾動，不影響垂直滾動
       e.preventDefault();
       touchCurrentX.current = currentX;
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+
     if (touchStartX.current === null || touchStartY.current === null) return;
 
     const touchEndX = e.changedTouches[0].clientX;
@@ -85,11 +98,11 @@ export default function RoomsMosaic() {
     // 只處理水平滑動（水平距離大於垂直距離，且水平距離大於 50px）
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
       if (deltaX > 0) {
-        // 左滑 → 下一組
-        goNext();
-      } else {
-        // 右滑 → 上一組
+        // 左滑 → 上一組
         goPrev();
+      } else {
+        // 右滑 → 下一組
+        goNext();
       }
     }
 
@@ -163,7 +176,7 @@ export default function RoomsMosaic() {
         {/* 移動端：上下堆疊（grid-cols-1），第二張圖高度比第一張圖大1/3（3:4比例） */}
         {/* 桌面端：左右並排（md:grid-cols-[40%_60%]） */}
         <div 
-          className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6 touch-pan-y"
+          className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6"
           style={{ touchAction: 'pan-y' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}

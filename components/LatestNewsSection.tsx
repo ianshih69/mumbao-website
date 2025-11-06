@@ -88,17 +88,30 @@ export default function LatestNewsSection() {
     const deltaX = touchStartX.current - currentX;
     const deltaY = touchStartY.current - currentY;
 
+    // 如果已經確定是水平滑動，持續阻止預設行為
+    if (isDragging.current) {
+      e.preventDefault();
+      touchCurrentX.current = currentX;
+      return;
+    }
+
+    // 如果確定是垂直滑動，允許預設行為（不阻止）
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+      // 這是垂直滑動，允許滾動
+      return;
+    }
+
     // 只在確定是水平滑動時才阻止預設行為
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-      if (!isDragging.current) {
-        isDragging.current = true;
-      }
+      isDragging.current = true;
+      // 只阻止水平滾動，不影響垂直滾動
       e.preventDefault();
       touchCurrentX.current = currentX;
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+
     if (touchStartX.current === null || touchStartY.current === null) return;
 
     const touchEndX = e.changedTouches[0].clientX;
@@ -153,7 +166,7 @@ export default function LatestNewsSection() {
           </button>
 
           {/* Carousel viewport */}
-          <div className="overflow-hidden touch-pan-y" style={{ touchAction: 'pan-y' }}>
+          <div className="overflow-hidden" style={{ touchAction: 'pan-y' }}>
             <div
               className="flex transition-transform duration-500 ease-out items-stretch"
               style={{ 
