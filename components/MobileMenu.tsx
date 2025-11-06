@@ -31,7 +31,7 @@ export default function MobileMenu() {
       >
         {/* 漢堡選單圖標：三條水平線 */}
         <svg
-          className="w-12 h-10"
+          className="w-8 h-[27px] md:w-12 md:h-10"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -43,7 +43,7 @@ export default function MobileMenu() {
         <img
           src="/images/menu.webp"
           alt="選單"
-          className="h-[53px] object-contain hidden md:inline"
+          className="h-[35px] md:h-[53px] w-auto object-contain"
         />
       </button>
 
