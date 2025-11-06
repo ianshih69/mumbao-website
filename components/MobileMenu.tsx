@@ -29,8 +29,22 @@ export default function MobileMenu() {
         className="flex items-center gap-2 text-[var(--text-main)] hover:opacity-70"
         aria-label="開啟選單"
       >
-        <span className="text-xl">☰</span>
-        <span className="text-sm hidden md:inline">選單</span>
+        {/* 漢堡選單圖標：三條水平線 */}
+        <svg
+          className="w-12 h-10"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          viewBox="0 0 24 24"
+        >
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+        <img
+          src="/images/menu.webp"
+          alt="選單"
+          className="h-[53px] object-contain hidden md:inline"
+        />
       </button>
 
       {/* Offcanvas 侧边菜单 */}

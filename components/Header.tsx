@@ -63,13 +63,12 @@ export default function Header() {
 
           {/* 中：Logo */}
           <div className="text-center leading-tight select-none">
-            <Link href="/" className="inline-block">
-              <div className="tracking-[0.2em] text-[var(--title-main)] font-semibold">
-                <div className="text-lg leading-none">MUMBAO STAY</div>
-                <div className="text-xs mt-0.5 leading-none text-[var(--text-main)]">
-                  慢慢蒔光
-                </div>
-              </div>
+            <Link href="/" className="inline-block translate-y-[2px]">
+              <img
+                src="/images/logo.webp"
+                alt="MUMBAO STAY 慢慢蒔光"
+                className="h-[85px] object-contain"
+              />
             </Link>
           </div>
 
@@ -108,13 +107,12 @@ export default function Header() {
         <div className="md:hidden flex justify-between items-center w-full">
           <MobileMenu />
 
-          <Link href="/" className="flex-1 text-center select-none">
-            <div className="tracking-wide text-[var(--title-main)] font-semibold text-sm leading-none">
-              MUMBAO STAY
-              <div className="text-[10px] mt-0.5 leading-none text-[var(--text-main)]">
-                慢慢蒔光
-              </div>
-            </div>
+          <Link href="/" className="flex-1 text-center select-none translate-y-[2px]">
+            <img
+              src="/images/logo.webp"
+              alt="MUMBAO STAY 慢慢蒔光"
+              className="h-[75px] mx-auto object-contain"
+            />
           </Link>
 
           <div className="relative flex items-center gap-2">
