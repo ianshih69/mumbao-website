@@ -17,6 +17,7 @@ type Meteor = {
   length: number;
   width: number;
   depthLevel: number; // 0=遠,1=中,2=近
+  hue: number; // 預先計算的色調，避免每次繪製時重新計算
 };
 
 export default function MeteorShower({ intensity = 200, showBackground = true }: MeteorShowerProps) {
@@ -89,6 +90,9 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
         maxLife = 200 + Math.random() * 200;         // 可以飛到超下面才消失
       }
 
+      // 預先計算 hue，避免每次繪製時重新計算
+      const hue = 45 + Math.random() * 5;
+      
       meteorsRef.current.push({
         x: startX,
         y: startY,
@@ -98,18 +102,37 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
         maxLife,
         length,
         width,
-        // ⬇ 這是新的，給 drawMeteor 用
         depthLevel,
-      } as any); // 如果 TS 抱怨，先加 as any，或把型別補上
+        hue, // 預先計算並存儲 hue
+      } as any);
     };
 
 
+    // 緩存背景漸層，避免每次都重新創建
+    let backgroundGradient: CanvasGradient | null = null;
+    let lastCanvasSize = { width: 0, height: 0 };
+    
     const drawBackground = () => {
       if (!showBackground) return;
-      const g = ctx.createRadialGradient(canvas.width / (2 * dpr), canvas.height / (3 * dpr), 0, canvas.width / (2 * dpr), canvas.height / (2 * dpr), Math.max(canvas.width, canvas.height) / dpr);
-      g.addColorStop(0, "#1a1a2f");
-      g.addColorStop(1, "#050509");
-      ctx.fillStyle = g;
+      
+      // 只在 canvas 尺寸改變時重新創建漸層
+      if (!backgroundGradient || 
+          canvas.width !== lastCanvasSize.width || 
+          canvas.height !== lastCanvasSize.height) {
+        backgroundGradient = ctx.createRadialGradient(
+          canvas.width / (2 * dpr), 
+          canvas.height / (3 * dpr), 
+          0, 
+          canvas.width / (2 * dpr), 
+          canvas.height / (2 * dpr), 
+          Math.max(canvas.width, canvas.height) / dpr
+        );
+        backgroundGradient.addColorStop(0, "#1a1a2f");
+        backgroundGradient.addColorStop(1, "#050509");
+        lastCanvasSize = { width: canvas.width, height: canvas.height };
+      }
+      
+      ctx.fillStyle = backgroundGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
@@ -133,8 +156,8 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
 
       ctx.save(); // 先存狀態，等等好還原
 
-      // 柔光暈
-      ctx.shadowBlur = size * 3;
+      // 柔光暈（優化：限制最大 shadowBlur 以提升效能）
+      ctx.shadowBlur = Math.min(size * 2, 15); // 減少 shadowBlur 並限制最大值
       ctx.shadowColor = color;
 
       ctx.beginPath();
@@ -207,7 +230,8 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
       ctx.save();
 
       // Glow（光暈）一定要有，不然遠的那層會看起來「只有星星」
-      ctx.shadowBlur = baseWidth * 4.5; // 再加一點，讓小尾巴也發光
+      // 優化：減少 shadowBlur 的計算，使用較小的值以提升效能
+      ctx.shadowBlur = Math.min(baseWidth * 3, 20); // 限制最大 shadowBlur 以提升效能
       ctx.shadowColor = `hsla(${hue}, 100%, ${brightnessHead}%, 0.9)`; // 提高 0.9，讓靠星星那一段更明顯
 
       ctx.beginPath();
@@ -233,8 +257,8 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
       const headX = m.x;
       const headY = m.y;
 
-      // 視覺色調、亮度
-      const hue = 45 + Math.random() * 5;
+      // 視覺色調、亮度（使用預先計算的 hue）
+      const hue = m.hue;
       const brightnessHead =
         m.depthLevel === 2 ? 85 :
         m.depthLevel === 1 ? 75 :
@@ -276,33 +300,53 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
       drawStar(headX, headY, starSize, headColor);
     };
 
+    // 限制流星最大數量，避免記憶體累積
+    const MAX_METEORS = 10;
+    
     const loop = (t: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
 
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
       // 生成頻率由 intensity 控制：每 intensity ms 生成 1~2 顆
-      if (t - lastSpawnRef.current >= Math.max(60, intensity)) {
+      // 如果流星數量已達上限，暫停生成
+      if (meteorsRef.current.length < MAX_METEORS && t - lastSpawnRef.current >= Math.max(60, intensity)) {
         spawnMeteor();
-        if (Math.random() < 0.35) spawnMeteor();
+        if (Math.random() < 0.35 && meteorsRef.current.length < MAX_METEORS) {
+          spawnMeteor();
+        }
         lastSpawnRef.current = t;
       }
 
-      // 更新 & 繪製
+      // 更新 & 繪製（只繪製在畫面內或附近的流星）
       meteorsRef.current.forEach((m) => {
-        m.x += m.vx;
-        m.y += m.vy;
-        m.life += 1;
-        drawMeteor(m);
+        // 只更新和繪製在畫面附近的可見流星
+        const isVisible = m.x > -300 && m.x < w + 300 && m.y > -300 && m.y < h + 300;
+        
+        if (isVisible) {
+          m.x += m.vx;
+          m.y += m.vy;
+          m.life += 1;
+          drawMeteor(m);
+        } else {
+          // 不在可見範圍的流星只更新位置，不繪製
+          m.x += m.vx;
+          m.y += m.vy;
+          m.life += 1;
+        }
       });
 
-      // 移除離開畫面或壽命到期
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      // 移除離開畫面或壽命到期（更嚴格的過濾條件）
       meteorsRef.current = meteorsRef.current.filter((m) => {
         const stillAlive = m.life < m.maxLife;
-        const notTooFarLeft = m.x > -1000;   // 以前 -600，現在讓它可以飛到超左邊
-        const notTooFarDown = m.y < h + 1000; // 以前 +600，現在可以掉更下面
-        return stillAlive && notTooFarLeft && notTooFarDown;
+        // 更嚴格地過濾：只保留在畫面附近的可見流星
+        const notTooFarLeft = m.x > -200;
+        const notTooFarRight = m.x < w + 200;
+        const notTooFarUp = m.y > -200;
+        const notTooFarDown = m.y < h + 200;
+        return stillAlive && notTooFarLeft && notTooFarRight && notTooFarUp && notTooFarDown;
       });
 
       rafRef.current = requestAnimationFrame(loop);
@@ -332,6 +376,8 @@ export default function MeteorShower({ intensity = 200, showBackground = true }:
         // 讓流星跑在整個網站內容上面，但還是在抹布下面
         zIndex: 15,
         pointerEvents: "none",
+        willChange: "contents", // GPU 加速
+        transform: "translateZ(0)", // 強制 GPU 加速
       }}
     />
   );  
