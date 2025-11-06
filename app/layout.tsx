@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="zh-Hant">
       <body>
         <StarfieldCanvas />
-        <MeteorShower intensity={200} showBackground={false} />
+        <MeteorShower intensity={500} showBackground={false} />
 
         <div style={{ position: "relative", zIndex: 10 }}>{children}</div>
 
