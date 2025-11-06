@@ -14,6 +14,8 @@ const GROUPS = [
 export default function RoomsMosaic() {
   const [idx, setIdx] = useState(0);
   const intervalRef = useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const restartTimer = () => {
     if (intervalRef.current) window.clearInterval(intervalRef.current);
@@ -32,6 +34,50 @@ export default function RoomsMosaic() {
   const goToPage = (pageIdx: number) => {
     setIdx(pageIdx);
     restartTimer(); // 手動點擊後重新計時
+  };
+
+  const goPrev = () => {
+    setIdx((i) => (i - 1 + GROUPS.length) % GROUPS.length);
+    restartTimer();
+  };
+
+  const goNext = () => {
+    setIdx((i) => (i + 1) % GROUPS.length);
+    restartTimer();
+  };
+
+  // 觸控滑動處理
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // 防止預設的滾動行為
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchStartX.current - touchEndX;
+    const deltaY = touchStartY.current - touchEndY;
+
+    // 只處理水平滑動（水平距離大於垂直距離，且水平距離大於 50px）
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // 左滑 → 下一組
+        goNext();
+      } else {
+        // 右滑 → 上一組
+        goPrev();
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   return (
@@ -97,7 +143,12 @@ export default function RoomsMosaic() {
         {/* 兩欄圖片：左邊直式（3:4），右邊橫式（5:3），高度一致（右圖決定高度） */}
         {/* 移動端：上下堆疊（grid-cols-1），第二張圖高度比第一張圖大1/3（3:4比例） */}
         {/* 桌面端：左右並排（md:grid-cols-[40%_60%]） */}
-        <div className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6">
+        <div 
+          className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Left image: 3:4 直式（高於寬），移動端高度由 grid-rows 控制（3:4比例），桌面端與右圖高度一致 */}
           <div className="relative w-full min-w-0 aspect-[5/3] md:aspect-[3/4] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 rooms-mosaic-left" style={{ height: '100%' }}>
             {GROUPS.map((g, i) => (

@@ -14,6 +14,8 @@ export default function LatestNewsSection() {
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(1); // 1 on mobile, up to 3 on desktop
   const intervalRef = useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const total = useMemo(() => NEWS_ITEMS.length, []);
 
@@ -68,6 +70,40 @@ export default function LatestNewsSection() {
     restartTimer(); // 手動操作後重新計時
   };
 
+  // 觸控滑動處理
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // 防止預設的滾動行為
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchStartX.current - touchEndX;
+    const deltaY = touchStartY.current - touchEndY;
+
+    // 只處理水平滑動（水平距離大於垂直距離，且水平距離大於 50px）
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // 左滑 → 下一張
+        goNext();
+      } else {
+        // 右滑 → 上一張
+        goPrev();
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   // Track translate percentage based on visible slots
   const translatePct = (current * 100) / visible;
 
@@ -102,6 +138,9 @@ export default function LatestNewsSection() {
             <div
               className="flex transition-transform duration-500 ease-out items-stretch"
               style={{ transform: `translateX(-${translatePct}%)` }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               {NEWS_ITEMS.map((item, idx) => (
                 <div key={item.image} style={{ width: `${100 / visible}%` }} className="shrink-0 flex flex-col px-2 md:px-3">
