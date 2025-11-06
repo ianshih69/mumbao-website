@@ -67,7 +67,7 @@ export default function Header() {
               <img
                 src="/images/logo.webp"
                 alt="MUMBAO STAY 慢慢蒔光"
-                className="h-[85px] object-contain"
+                className="h-[64px] md:h-[85px] object-contain"
               />
             </Link>
           </div>
@@ -111,7 +111,7 @@ export default function Header() {
             <img
               src="/images/logo.webp"
               alt="MUMBAO STAY 慢慢蒔光"
-              className="h-[75px] mx-auto object-contain"
+              className="h-[64px] md:h-[85px] mx-auto object-contain"
             />
           </Link>
 
