@@ -1,9 +1,44 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import MobileMenu from "./MobileMenu";
 import Link from "next/link";
 
 export default function Header() {
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState("TW");
+  const langMenuRef = useRef<HTMLDivElement>(null);
+
+  // 點擊外部關閉選單
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setIsLangOpen(false);
+      }
+    };
+
+    if (isLangOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isLangOpen]);
+
+  const languages = [
+    { code: "TW", label: "繁體中文" },
+    { code: "JP", label: "日本語" },
+    { code: "KR", label: "한국어" },
+    { code: "US", label: "English" },
+  ];
+
+  const handleLanguageSelect = (code: string) => {
+    setCurrentLang(code);
+    setIsLangOpen(false);
+    // 這裡可以添加語言切換邏輯
+    console.log("Selected language:", code);
+  };
   return (
     <header
       className="
@@ -39,29 +74,33 @@ export default function Header() {
           </div>
 
           {/* 右：語言 */}
-          <div className="flex items-center justify-end gap-4">
+          <div className="relative flex items-center justify-end gap-2" ref={langMenuRef}>
             <button
-              className="text-[var(--text-main)] hover:opacity-70"
+              onClick={() => setIsLangOpen(!isLangOpen)}
+              className="text-[var(--text-main)] hover:opacity-70 transition-opacity"
               aria-label="語言"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 002 2h2.945M11 20v-1.5a2 2 0 012-2h2.055M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+              <img src="/images/globe.webp" alt="語言" className="w-5 h-5" />
             </button>
 
             <span className="text-sm text-[var(--text-main)] whitespace-nowrap">
-              Tw | En
+              {currentLang}
             </span>
+
+            {/* 語言下拉選單 */}
+            {isLangOpen && (
+              <div className="absolute right-0 top-full mt-2 w-36 bg-white border border-[var(--border-main)]/30 shadow-lg rounded-sm overflow-hidden z-50">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => handleLanguageSelect(lang.code)}
+                    className="w-full text-left px-4 py-3 text-sm text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-colors border-b border-[var(--border-main)]/10 last:border-b-0"
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -78,10 +117,33 @@ export default function Header() {
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center gap-2">
+            <button
+              onClick={() => setIsLangOpen(!isLangOpen)}
+              className="text-[var(--text-main)] hover:opacity-70 transition-opacity"
+              aria-label="語言"
+            >
+              <img src="/images/globe.webp" alt="語言" className="w-4 h-4" />
+            </button>
+
             <span className="text-xs text-[var(--text-main)] whitespace-nowrap">
-              Tw|En
+              {currentLang}
             </span>
+
+            {/* 手機版語言下拉選單 */}
+            {isLangOpen && (
+              <div className="absolute right-0 top-full mt-2 w-36 bg-white border border-[var(--border-main)]/30 shadow-lg rounded-sm overflow-hidden z-50">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => handleLanguageSelect(lang.code)}
+                    className="w-full text-left px-4 py-3 text-sm text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-colors border-b border-[var(--border-main)]/10 last:border-b-0"
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -17,6 +17,9 @@ export default function Footer() {
           {/* 第二行：社群媒體 */}
           <div className="text-center text-sm mb-4">
             <span className="mr-2">Follow us on:</span>
+            <a href="#" className="inline-block mx-[5px]" aria-label="Threads">
+              <img src="/images/threads.webp" alt="Threads" className="w-5 h-5 inline object-contain" />
+            </a>
             <a href="#" className="inline-block mx-[5px]" aria-label="Facebook">
               <img src="/images/Facebook.webp" alt="Facebook" className="w-5 h-5 inline object-contain" />
             </a>
@@ -55,6 +58,9 @@ export default function Footer() {
           {/* 社群媒體 */}
           <div className="text-sm mb-4">
             <span className="mr-2">Follow us on :</span>
+            <a href="#" className="inline-block mx-[5px]" aria-label="Threads">
+              <img src="/images/threads.webp" alt="Threads" className="w-5 h-5 inline object-contain" />
+            </a>
             <a href="#" className="inline-block mx-[5px]" aria-label="Facebook">
               <img src="/images/Facebook.webp" alt="Facebook" className="w-5 h-5 inline object-contain" />
             </a>
