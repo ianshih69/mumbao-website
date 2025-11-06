@@ -16,6 +16,8 @@ export default function LatestNewsSection() {
   const intervalRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
+  const touchCurrentX = useRef<number | null>(null);
+  const isDragging = useRef(false);
 
   const total = useMemo(() => NEWS_ITEMS.length, []);
 
@@ -74,11 +76,26 @@ export default function LatestNewsSection() {
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
+    touchCurrentX.current = e.touches[0].clientX;
+    isDragging.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    // 防止預設的滾動行為
-    e.preventDefault();
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = touchStartX.current - currentX;
+    const deltaY = touchStartY.current - currentY;
+
+    // 只在確定是水平滑動時才阻止預設行為
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+      if (!isDragging.current) {
+        isDragging.current = true;
+      }
+      e.preventDefault();
+      touchCurrentX.current = currentX;
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -102,6 +119,8 @@ export default function LatestNewsSection() {
 
     touchStartX.current = null;
     touchStartY.current = null;
+    touchCurrentX.current = null;
+    isDragging.current = false;
   };
 
   // Track translate percentage based on visible slots
@@ -134,10 +153,13 @@ export default function LatestNewsSection() {
           </button>
 
           {/* Carousel viewport */}
-          <div className="overflow-hidden">
+          <div className="overflow-hidden touch-pan-y" style={{ touchAction: 'pan-y' }}>
             <div
               className="flex transition-transform duration-500 ease-out items-stretch"
-              style={{ transform: `translateX(-${translatePct}%)` }}
+              style={{ 
+                transform: `translateX(-${translatePct}%)`,
+                transition: isDragging.current ? 'none' : 'transform 500ms ease-out'
+              }}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}

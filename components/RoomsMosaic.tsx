@@ -16,6 +16,8 @@ export default function RoomsMosaic() {
   const intervalRef = useRef<number | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
+  const touchCurrentX = useRef<number | null>(null);
+  const isDragging = useRef(false);
 
   const restartTimer = () => {
     if (intervalRef.current) window.clearInterval(intervalRef.current);
@@ -50,11 +52,26 @@ export default function RoomsMosaic() {
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
+    touchCurrentX.current = e.touches[0].clientX;
+    isDragging.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    // 防止預設的滾動行為
-    e.preventDefault();
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = touchStartX.current - currentX;
+    const deltaY = touchStartY.current - currentY;
+
+    // 只在確定是水平滑動時才阻止預設行為
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+      if (!isDragging.current) {
+        isDragging.current = true;
+      }
+      e.preventDefault();
+      touchCurrentX.current = currentX;
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -78,6 +95,8 @@ export default function RoomsMosaic() {
 
     touchStartX.current = null;
     touchStartY.current = null;
+    touchCurrentX.current = null;
+    isDragging.current = false;
   };
 
   return (
@@ -144,7 +163,8 @@ export default function RoomsMosaic() {
         {/* 移動端：上下堆疊（grid-cols-1），第二張圖高度比第一張圖大1/3（3:4比例） */}
         {/* 桌面端：左右並排（md:grid-cols-[40%_60%]） */}
         <div 
-          className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6"
+          className="grid grid-cols-1 md:grid-cols-[40%_60%] grid-rows-[3fr_4fr] md:grid-rows-none gap-3 md:gap-6 touch-pan-y"
+          style={{ touchAction: 'pan-y' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
