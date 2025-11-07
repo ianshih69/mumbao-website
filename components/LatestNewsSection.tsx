@@ -243,10 +243,6 @@ export default function LatestNewsSection() {
       // 1:1 跟隨：游標移動多少像素，圖片就移動多少像素
       // 將像素移動轉換為 offset（offset 是相對於 itemWidth 的比例）
       // 游標往左移動（mouseDeltaX 為負），圖片往左移動（offset 為正）
-      // 所以 offset = -mouseDeltaX / itemWidth
-      // 例如：滑鼠移動 100px，itemWidth = 500px，則 offset = -100/500 = -0.2
-      // 然後 translateX = -((current * 100) / visible + offset * 100)%
-      // 這會讓圖片移動 100px（因為 offset * 100% * itemWidth = 0.2 * 500 = 100px）
       let offset = -mouseDeltaX / itemWidth;
       
       // 計算邊界限制 - 允許延伸顯示部分相鄰圖片
@@ -261,6 +257,7 @@ export default function LatestNewsSection() {
       
       // 直接操作 DOM，避免 React 重新渲染延遲
       // 使用像素值確保 1:1 跟隨：滑鼠移動多少像素，圖片就移動多少像素
+      // 注意：需要考慮 slider 的 paddingLeft (5px)
       const baseTranslatePx = (current * itemWidth); // 當前頁面的基礎位置（像素）
       const dragTranslatePx = offset * itemWidth; // 拖動偏移（像素）
       const totalTranslatePx = baseTranslatePx + dragTranslatePx; // 總位置（像素）
@@ -475,32 +472,33 @@ export default function LatestNewsSection() {
         <h2 className="text-white font-normal text-center tracking-[0.4em] text-xl md:text-2xl mb-12 md:mb-14">
           最 新 消 息
         </h2>
+      </div>
 
-        <div className="relative select-none">
-          {/* Carousel viewport */}
-          <div 
-            ref={carouselRef}
-            className="overflow-hidden cursor-grab active:cursor-grabbing" 
-            style={{ touchAction: 'pan-y' }}
-            onMouseDown={handleMouseDown}
-          >
-            <div
-              ref={sliderRef}
-              className="flex items-stretch"
+      <div className="relative select-none px-[10px]">
+        {/* Carousel viewport */}
+        <div 
+          ref={carouselRef}
+          className="overflow-hidden cursor-grab active:cursor-grabbing" 
+          style={{ touchAction: 'pan-y' }}
+          onMouseDown={handleMouseDown}
+        >
+          <div
+            ref={sliderRef}
+            className="flex items-stretch"
               style={{ 
-                transform: `translateX(-${translatePct}%)`,
+                transform: 'translateX(0px)',
                 transition: 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                 willChange: 'transform',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
                 transformStyle: 'preserve-3d'
               }}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              {NEWS_ITEMS.map((item, idx) => (
-                <div key={item.image} data-card-index={idx} style={{ width: `${100 / visible}%` }} className="shrink-0 flex flex-col px-2 md:px-3">
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {NEWS_ITEMS.map((item, idx) => (
+              <div key={item.image} data-card-index={idx} style={{ width: `${100 / visible}%` }} className="shrink-0 flex flex-col px-[10px]">
                   {/* 圖片容器：固定高度 */}
                   <div className="relative w-full aspect-[7/8] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 shrink-0">
                     <OverlayCard
@@ -527,7 +525,6 @@ export default function LatestNewsSection() {
                   </div>
                 </div>
               ))}
-            </div>
           </div>
         </div>
 
