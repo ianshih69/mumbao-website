@@ -47,7 +47,7 @@ export default function Header() {
         bg-cover bg-center bg-no-repeat
         relative
       "
-      style={{ backgroundImage: "url('/images/background.jpg')" }}
+      style={{ backgroundImage: "url('/images/background.webp')" }}
     >
       {/* 淡淡遮罩，讓字可讀，但不蓋掉背景圖 */}
       <div className="absolute inset-0 bg-[var(--bg-header)]/10 pointer-events-none"></div>

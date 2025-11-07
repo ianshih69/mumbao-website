@@ -21,8 +21,8 @@
 }
 
 /* ===== 頁面底色 ===== */
-body {
-  background: var(--bg-main);
+html, body {
+  background: white;
   color: var(--text-main);
   font-family: Arial, Helvetica, sans-serif;
 }

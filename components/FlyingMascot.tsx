@@ -87,7 +87,7 @@ export default function FlyingMascot() {
       <div className="relative w-32 sm:w-40 md:w-48">
         {/* 雲：輕微上下漂，視覺細膩 */}
         <img
-          src="/images/cloud.png"
+          src="/images/cloud.webp"
           alt="cloud"
           className="block w-[65%] h-auto mx-auto animate-pulse-slow"
           loading="lazy"
@@ -95,7 +95,7 @@ export default function FlyingMascot() {
         />
         {/* 角色站在雲上 */}
         <img
-          src="/images/dog.png"
+          src="/images/dog.webp"
           alt="dog"
           className="absolute left-1/2 bottom-[50%] w-[50%] h-auto"
           style={{ transform: "translateX(-50%)" }}

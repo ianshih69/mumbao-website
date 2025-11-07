@@ -33,7 +33,7 @@ export default function Home() {
           py-16 md:py-24
           bg-cover bg-center bg-no-repeat
         "
-        style={{ backgroundImage: "url('/images/background.jpg')" }}
+        style={{ backgroundImage: "url('/images/background.webp')" }}
       >
         {/* 很淡很淡的奶油遮罩，為了讓字跟卡片讀得清楚，但不會把背景整個蓋掉 */}
         <div className="absolute inset-0 bg-[var(--bg-header)]/10 pointer-events-none"></div>
