@@ -48,13 +48,19 @@ export default function LatestNewsSection() {
 
   useEffect(() => {
     const setupTimer = () => {
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
-      intervalRef.current = window.setInterval(() => {
-        setCurrent((c) => {
-          const maxStart = Math.max(0, total - visible);
-          return c < maxStart ? c + 1 : 0; // 循環回到開頭，不會出現空白
-        });
-      }, 3000);
+      // 只有在沒有拖動且沒有動畫時才啟動自動播放
+      if (!isDragging.current && !isAnimating.current) {
+        if (intervalRef.current) window.clearInterval(intervalRef.current);
+        intervalRef.current = window.setInterval(() => {
+          // 再次檢查是否正在拖動或動畫中
+          if (!isDragging.current && !isAnimating.current) {
+            setCurrent((c) => {
+              const maxStart = Math.max(0, total - visible);
+              return c < maxStart ? c + 1 : 0; // 循環回到開頭，不會出現空白
+            });
+          }
+        }, 3000);
+      }
     };
     setupTimer();
     return () => {
@@ -63,13 +69,19 @@ export default function LatestNewsSection() {
   }, [visible, total]);
 
   const restartTimer = () => {
-    if (intervalRef.current) window.clearInterval(intervalRef.current);
-    intervalRef.current = window.setInterval(() => {
-      setCurrent((c) => {
-        const maxStart = Math.max(0, total - visible);
-        return c < maxStart ? c + 1 : 0;
-      });
-    }, 3000);
+    // 只有在沒有拖動且沒有動畫時才重新開始自動播放
+    if (!isDragging.current && !isAnimating.current) {
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+      intervalRef.current = window.setInterval(() => {
+        // 再次檢查是否正在拖動或動畫中
+        if (!isDragging.current && !isAnimating.current) {
+          setCurrent((c) => {
+            const maxStart = Math.max(0, total - visible);
+            return c < maxStart ? c + 1 : 0;
+          });
+        }
+      }, 3000);
+    }
   };
 
   const goPrev = () => {
@@ -291,6 +303,12 @@ export default function LatestNewsSection() {
       const minOffset = current === 0 ? -extendLimit : -Infinity; // 第一頁時允許往右拖動顯示部分右邊圖片
       const maxOffset = current >= maxStart ? extendLimit : Infinity; // 最後一頁時允許往左拖動顯示部分左邊圖片
       
+      // 確保在慣性動畫期間也停止自動播放
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
       // 使用 requestAnimationFrame 處理慣性動畫
       isAnimating.current = true;
       let lastTime = performance.now();
@@ -331,12 +349,6 @@ export default function LatestNewsSection() {
         if (Math.abs(inertiaVelocity.current) < 0.0001) {
           isAnimating.current = false;
           const finalOffset = currentOffset;
-          setDragOffset(0);
-          
-          // 恢復 transition 以便後續動畫
-          if (sliderRef.current) {
-            sliderRef.current.style.transition = 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-          }
           
           // 判斷是否切換頁面（基於最終位置或速度）
           // 在邊界時，需要考慮延伸限制
@@ -344,35 +356,49 @@ export default function LatestNewsSection() {
           const isAtRightBoundary = current >= maxStart;
           const shouldSwitch = speedThreshold || distanceThreshold || Math.abs(finalOffset) > 0.12;
           
+          // 恢復 transition 以便後續動畫
+          if (sliderRef.current) {
+            sliderRef.current.style.transition = 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          }
+          
+          // 先重置 offset，避免位置計算錯誤
+          setDragOffset(0);
+          
           if (shouldSwitch) {
             if (finalOffset > 0 || (Math.abs(finalOffset) < 0.05 && currentVelocity > 0)) {
               // 往左拖動，切換到下一頁（但如果在右邊界，不切換）
               if (!isAtRightBoundary) {
-                goNext();
+                goNext(); // 切換頁面，useEffect 會自動更新位置
               } else {
                 // 在右邊界，彈回原位置
-                if (sliderRef.current) {
-                  const translatePct = (current * 100) / visible;
-                  sliderRef.current.style.transform = `translateX(-${translatePct}%)`;
+                if (sliderRef.current && carouselRef.current) {
+                  const containerWidth = carouselRef.current.offsetWidth;
+                  const itemWidth = containerWidth / visible;
+                  const translatePx = current * itemWidth;
+                  sliderRef.current.style.transform = `translateX(-${translatePx}px)`;
                 }
               }
             } else if (finalOffset < 0 || (Math.abs(finalOffset) < 0.05 && currentVelocity < 0)) {
               // 往右拖動，切換到上一頁（但如果在左邊界，不切換）
               if (!isAtLeftBoundary) {
-                goPrev();
+                goPrev(); // 切換頁面，useEffect 會自動更新位置
               } else {
                 // 在左邊界，彈回原位置
-                if (sliderRef.current) {
-                  const translatePct = (current * 100) / visible;
-                  sliderRef.current.style.transform = `translateX(-${translatePct}%)`;
+                if (sliderRef.current && carouselRef.current) {
+                  const containerWidth = carouselRef.current.offsetWidth;
+                  const itemWidth = containerWidth / visible;
+                  const translatePx = current * itemWidth;
+                  sliderRef.current.style.transform = `translateX(-${translatePx}px)`;
                 }
               }
             }
           } else {
             // 如果不需要切換，也要更新到正確位置（彈回原位置）
-            if (sliderRef.current) {
-              const translatePct = (current * 100) / visible;
-              sliderRef.current.style.transform = `translateX(-${translatePct}%)`;
+            if (sliderRef.current && carouselRef.current) {
+              const containerWidth = carouselRef.current.offsetWidth;
+              const itemWidth = containerWidth / visible;
+              const translatePx = current * itemWidth;
+              sliderRef.current.style.transform = `translateX(-${translatePx}px)`;
             }
           }
           
@@ -432,6 +458,7 @@ export default function LatestNewsSection() {
   
   // 當 current 改變時，更新 DOM（自動切換時）
   useEffect(() => {
+    // 只有在不是拖動狀態且不是慣性動畫狀態時，才更新位置（自動切換）
     if (sliderRef.current && !isDragging.current && !isAnimating.current && carouselRef.current) {
       const containerWidth = carouselRef.current.offsetWidth;
       const itemWidth = containerWidth / visible;
@@ -440,6 +467,7 @@ export default function LatestNewsSection() {
       sliderRef.current.style.transition = 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     }
   }, [current, visible]);
+  
 
   return (
     <section className="bg-[#A4835E] py-16 md:py-24">
