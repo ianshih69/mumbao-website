@@ -11,7 +11,7 @@ import Page5Booking from "@/components/Page5Booking";
 export default function Home() {
 
   return (
-    <>
+    <div>
       {/* [0] Header */}
       <Header />
 
@@ -97,6 +97,6 @@ export default function Home() {
 
       {/* [6] Footer */}
       <Footer />
-    </>
+    </div>
   );
 }

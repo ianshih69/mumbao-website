@@ -8,6 +8,8 @@ type OverlayCardProps = {
   children: ReactNode;     // 通常放 <img>（你已經有 srcSet / sizes）
   className?: string;      // 讓你外部控制尺寸/比例
   zoomOnHover?: boolean;   // 桌機 hover 輕微放大
+  disableHover?: boolean;  // 禁用 hover 效果（拖動時使用）
+  forceShow?: boolean;     // 強制顯示遮罩（拖動時保持顯示）
 };
 
 export default function OverlayCard({
@@ -16,6 +18,8 @@ export default function OverlayCard({
   children,
   className = "",
   zoomOnHover = true,
+  disableHover = false,
+  forceShow = false,
 }: OverlayCardProps) {
   return (
     <div
@@ -33,7 +37,7 @@ export default function OverlayCard({
       <div
         className={[
           "relative w-full h-full transition-transform duration-300 will-change-transform",
-          zoomOnHover
+          zoomOnHover && !disableHover
             ? "group-hover:scale-[1.02] group-focus:scale-[1.02] group-focus-within:scale-[1.02]"
             : "",
         ].join(" ")}
@@ -43,16 +47,26 @@ export default function OverlayCard({
 
       {/* 反黑遮罩（只在 hover / focus / focus-within 顯示） */}
       <div
-        className="pointer-events-none absolute inset-0 bg-black/45 opacity-0
+        className={`pointer-events-none absolute inset-0 bg-black/45
                    transition-opacity duration-200 ease-out
-                   group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100"
+                   ${forceShow 
+                     ? 'opacity-100' 
+                     : disableHover 
+                       ? 'opacity-0' 
+                       : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100'
+                   }`}
       />
 
       {/* 中央白框 + 文字（覆蓋層內放可點擊的 <a>，其餘區域不吃點擊） */}
       <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0
+        className={`pointer-events-none absolute inset-0 flex items-center justify-center
                    transition-opacity duration-200 ease-out
-                   group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100"
+                   ${forceShow 
+                     ? 'opacity-100' 
+                     : disableHover 
+                       ? 'opacity-0' 
+                       : 'opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100'
+                   }`}
       >
         <a
           href={href}

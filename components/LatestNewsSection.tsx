@@ -18,6 +18,21 @@ export default function LatestNewsSection() {
   const touchStartY = useRef<number | null>(null);
   const touchCurrentX = useRef<number | null>(null);
   const isDragging = useRef(false);
+  const mouseStartX = useRef<number | null>(null);
+  const mouseCurrentX = useRef<number | null>(null);
+  const mouseStartOffsetX = useRef<number | null>(null); // 點擊時游標相對於容器的位置
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDraggingState, setIsDraggingState] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const lastMoveTime = useRef<number | null>(null);
+  const lastMoveX = useRef<number | null>(null);
+  const velocity = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
+  const inertiaVelocity = useRef(0);
+  const isAnimating = useRef(false);
+  const currentDragOffsetRef = useRef(0);
 
   const total = useMemo(() => NEWS_ITEMS.length, []);
 
@@ -62,14 +77,12 @@ export default function LatestNewsSection() {
       const maxStart = Math.max(0, total - visible);
       return Math.max(0, Math.min(maxStart, c - 1)); // 最多停在第一頁
     });
-    restartTimer(); // 手動操作後重新計時
   };
   const goNext = () => {
     setCurrent((c) => {
       const maxStart = Math.max(0, total - visible);
       return Math.max(0, Math.min(maxStart, c + 1)); // 最多停在最後一頁
     });
-    restartTimer(); // 手動操作後重新計時
   };
 
   // 觸控滑動處理
@@ -78,6 +91,7 @@ export default function LatestNewsSection() {
     touchStartY.current = e.touches[0].clientY;
     touchCurrentX.current = e.touches[0].clientX;
     isDragging.current = false;
+    setIsDraggingState(false); // 觸控開始時先不設置，等確定是水平滑動再設置
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -104,6 +118,7 @@ export default function LatestNewsSection() {
     // 只在確定是水平滑動時才阻止預設行為
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
       isDragging.current = true;
+      setIsDraggingState(true); // 確定是水平滑動時禁用 hover
       // 只阻止水平滾動，不影響垂直滾動
       e.preventDefault();
       touchCurrentX.current = currentX;
@@ -134,10 +149,297 @@ export default function LatestNewsSection() {
     touchStartY.current = null;
     touchCurrentX.current = null;
     isDragging.current = false;
+    setIsDraggingState(false); // 恢復 hover 功能
   };
 
-  // Track translate percentage based on visible slots
-  const translatePct = (current * 100) / visible;
+  // 滑鼠拖動處理
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // 只處理左鍵
+    e.preventDefault();
+    mouseStartX.current = e.clientX;
+    mouseCurrentX.current = e.clientX;
+    
+    // 記錄點擊時游標相對於容器的位置
+    if (carouselRef.current) {
+      const rect = carouselRef.current.getBoundingClientRect();
+      mouseStartOffsetX.current = e.clientX - rect.left;
+    }
+    
+    setDragOffset(0);
+    isDragging.current = true;
+    setIsDraggingState(true); // 更新 state 以禁用其他圖片的 hover
+    
+    // 找到被點擊的圖片索引
+    const target = e.target as HTMLElement;
+    const cardElement = target.closest('[data-card-index]') as HTMLElement;
+    if (cardElement) {
+      const index = parseInt(cardElement.getAttribute('data-card-index') || '-1');
+      if (index >= 0) {
+        setHoveredIndex(index); // 保持被點擊的圖片顯示"詳細內容"
+      }
+    }
+    
+    // 停止自動播放
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    if (carouselRef.current) {
+      carouselRef.current.style.cursor = 'grabbing';
+      carouselRef.current.style.userSelect = 'none';
+    }
+    
+    // 綁定到 document 以確保滑鼠移出容器時仍能追蹤
+    document.addEventListener('mousemove', handleMouseMoveGlobal);
+    document.addEventListener('mouseup', handleMouseUpGlobal);
+  };
+
+  const handleMouseMoveGlobal = (e: MouseEvent) => {
+    if (!isDragging.current || mouseStartX.current === null || mouseStartOffsetX.current === null) return;
+    
+    e.preventDefault();
+    mouseCurrentX.current = e.clientX;
+    
+    // 計算游標移動的絕對距離（像素）
+    const deltaX = e.clientX - mouseStartX.current;
+    
+    // 計算速度（用於慣性效果）- 使用更精確的速度計算
+    const now = performance.now();
+    if (lastMoveTime.current !== null && lastMoveX.current !== null) {
+      const timeDelta = now - lastMoveTime.current;
+      const xDelta = e.clientX - lastMoveX.current;
+      if (timeDelta > 0) {
+        // 使用加權平均來平滑速度計算
+        velocity.current = velocity.current * 0.7 + (xDelta / timeDelta) * 0.3;
+      }
+    }
+    lastMoveTime.current = now;
+    lastMoveX.current = e.clientX;
+    
+    if (carouselRef.current && sliderRef.current) {
+      const containerWidth = carouselRef.current.offsetWidth;
+      const itemWidth = containerWidth / visible;
+      
+      // 計算當前游標相對於容器的位置
+      const rect = carouselRef.current.getBoundingClientRect();
+      const currentOffsetX = e.clientX - rect.left;
+      
+      // 計算游標移動的距離（相對於點擊時在容器內的位置，單位：像素）
+      const mouseDeltaX = currentOffsetX - mouseStartOffsetX.current;
+      
+      // 1:1 跟隨：游標移動多少像素，圖片就移動多少像素
+      // 將像素移動轉換為 offset（offset 是相對於 itemWidth 的比例）
+      // 游標往左移動（mouseDeltaX 為負），圖片往左移動（offset 為正）
+      // 所以 offset = -mouseDeltaX / itemWidth
+      // 例如：滑鼠移動 100px，itemWidth = 500px，則 offset = -100/500 = -0.2
+      // 然後 translateX = -((current * 100) / visible + offset * 100)%
+      // 這會讓圖片移動 100px（因為 offset * 100% * itemWidth = 0.2 * 500 = 100px）
+      let offset = -mouseDeltaX / itemWidth;
+      
+      // 計算邊界限制 - 允許延伸顯示部分相鄰圖片
+      const maxStart = Math.max(0, total - visible);
+      const extendLimit = 0.3; // 允許延伸顯示30%的相鄰圖片
+      const minOffset = current === 0 ? -extendLimit : -Infinity; // 第一頁時允許往右拖動顯示部分右邊圖片
+      const maxOffset = current >= maxStart ? extendLimit : Infinity; // 最後一頁時允許往左拖動顯示部分左邊圖片
+      
+      // 限制 offset 範圍
+      offset = Math.max(minOffset, Math.min(maxOffset, offset));
+      currentDragOffsetRef.current = offset;
+      
+      // 直接操作 DOM，避免 React 重新渲染延遲
+      // 使用像素值確保 1:1 跟隨：滑鼠移動多少像素，圖片就移動多少像素
+      const baseTranslatePx = (current * itemWidth); // 當前頁面的基礎位置（像素）
+      const dragTranslatePx = offset * itemWidth; // 拖動偏移（像素）
+      const totalTranslatePx = baseTranslatePx + dragTranslatePx; // 總位置（像素）
+      
+      sliderRef.current.style.transform = `translateX(-${totalTranslatePx}px)`;
+      sliderRef.current.style.transition = 'none';
+    }
+  };
+
+  const handleMouseUpGlobal = () => {
+    if (!isDragging.current || mouseStartX.current === null) return;
+    
+    const currentDragOffset = currentDragOffsetRef.current; // 保存當前拖動偏移量
+    const currentVelocity = velocity.current; // 保存當前速度（px/ms）
+    
+    // 停止拖動狀態
+    isDragging.current = false;
+    setIsDraggingState(false); // 恢復 hover 功能
+    setHoveredIndex(null); // 清除被點擊的圖片索引
+    
+    // 同步 state 以便後續計算
+    setDragOffset(currentDragOffset);
+    
+    // 計算慣性速度（轉換為 offset/ms）
+    if (carouselRef.current && sliderRef.current) {
+      const containerWidth = carouselRef.current.offsetWidth;
+      const itemWidth = containerWidth / visible;
+      
+      // 將速度從 px/ms 轉換為 offset/ms
+      const velocityInOffset = currentVelocity / itemWidth;
+      inertiaVelocity.current = velocityInOffset;
+      
+      // 基於速度和距離的動態閾值
+      const speedThreshold = Math.abs(velocityInOffset) > 0.008; // 速度閾值
+      const distanceThreshold = Math.abs(currentDragOffset) > 0.12; // 距離閾值
+      
+      // 計算邊界限制 - 允許延伸顯示部分相鄰圖片
+      const maxStart = Math.max(0, total - visible);
+      const extendLimit = 0.3; // 允許延伸顯示30%的相鄰圖片
+      const minOffset = current === 0 ? -extendLimit : -Infinity; // 第一頁時允許往右拖動顯示部分右邊圖片
+      const maxOffset = current >= maxStart ? extendLimit : Infinity; // 最後一頁時允許往左拖動顯示部分左邊圖片
+      
+      // 使用 requestAnimationFrame 處理慣性動畫
+      isAnimating.current = true;
+      let lastTime = performance.now();
+      let currentOffset = currentDragOffset; // 從當前位置開始
+      const friction = 0.95; // 摩擦係數（更平滑的減速）
+      
+      const animate = (currentTime: number) => {
+        if (!isAnimating.current || !sliderRef.current) return;
+        
+        const deltaTime = Math.min(currentTime - lastTime, 50); // 限制最大 deltaTime 避免跳躍
+        lastTime = currentTime;
+        
+        // 應用摩擦，讓慣性逐漸減速
+        inertiaVelocity.current *= Math.pow(friction, deltaTime / 16); // 標準化到16ms一幀
+        
+        // 累積位置更新
+        currentOffset += inertiaVelocity.current * deltaTime;
+        
+        // 限制 offset 範圍，防止超出邊界（但允許延伸顯示部分相鄰圖片）
+        currentOffset = Math.max(minOffset, Math.min(maxOffset, currentOffset));
+        
+        // 如果到達邊界，停止慣性動畫
+        if ((currentOffset <= minOffset && inertiaVelocity.current < 0) || 
+            (currentOffset >= maxOffset && inertiaVelocity.current > 0)) {
+          inertiaVelocity.current = 0;
+        }
+        
+        // 直接操作 DOM，避免 React 重新渲染延遲
+        // 使用像素值確保 1:1 跟隨
+        const baseTranslatePx = (current * itemWidth); // 當前頁面的基礎位置（像素）
+        const dragTranslatePx = currentOffset * itemWidth; // 拖動偏移（像素）
+        const totalTranslatePx = baseTranslatePx + dragTranslatePx; // 總位置（像素）
+        
+        sliderRef.current.style.transform = `translateX(-${totalTranslatePx}px)`;
+        sliderRef.current.style.transition = 'none';
+        
+        // 如果速度太小，停止動畫並判斷是否切換
+        if (Math.abs(inertiaVelocity.current) < 0.0001) {
+          isAnimating.current = false;
+          const finalOffset = currentOffset;
+          setDragOffset(0);
+          
+          // 恢復 transition 以便後續動畫
+          if (sliderRef.current) {
+            sliderRef.current.style.transition = 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          }
+          
+          // 判斷是否切換頁面（基於最終位置或速度）
+          // 在邊界時，需要考慮延伸限制
+          const isAtLeftBoundary = current === 0;
+          const isAtRightBoundary = current >= maxStart;
+          const shouldSwitch = speedThreshold || distanceThreshold || Math.abs(finalOffset) > 0.12;
+          
+          if (shouldSwitch) {
+            if (finalOffset > 0 || (Math.abs(finalOffset) < 0.05 && currentVelocity > 0)) {
+              // 往左拖動，切換到下一頁（但如果在右邊界，不切換）
+              if (!isAtRightBoundary) {
+                goNext();
+              } else {
+                // 在右邊界，彈回原位置
+                if (sliderRef.current) {
+                  const translatePct = (current * 100) / visible;
+                  sliderRef.current.style.transform = `translateX(-${translatePct}%)`;
+                }
+              }
+            } else if (finalOffset < 0 || (Math.abs(finalOffset) < 0.05 && currentVelocity < 0)) {
+              // 往右拖動，切換到上一頁（但如果在左邊界，不切換）
+              if (!isAtLeftBoundary) {
+                goPrev();
+              } else {
+                // 在左邊界，彈回原位置
+                if (sliderRef.current) {
+                  const translatePct = (current * 100) / visible;
+                  sliderRef.current.style.transform = `translateX(-${translatePct}%)`;
+                }
+              }
+            }
+          } else {
+            // 如果不需要切換，也要更新到正確位置（彈回原位置）
+            if (sliderRef.current) {
+              const translatePct = (current * 100) / visible;
+              sliderRef.current.style.transform = `translateX(-${translatePct}%)`;
+            }
+          }
+          
+          // 放開後重新開始3秒自動換頁計時
+          restartTimer();
+        } else {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        }
+      };
+      
+      animationFrameRef.current = requestAnimationFrame(animate);
+    } else {
+      // 如果沒有容器引用，直接判斷
+      const threshold = 0.12;
+      if (Math.abs(currentDragOffset) > threshold) {
+        if (currentDragOffset > 0) {
+          goNext();
+        } else {
+          goPrev();
+        }
+      }
+      setDragOffset(0);
+      restartTimer();
+    }
+    
+    mouseStartX.current = null;
+    mouseCurrentX.current = null;
+    mouseStartOffsetX.current = null;
+    lastMoveTime.current = null;
+    lastMoveX.current = null;
+    velocity.current = 0;
+    
+    if (carouselRef.current) {
+      carouselRef.current.style.cursor = 'grab';
+      carouselRef.current.style.userSelect = '';
+    }
+    
+    // 移除全局事件監聽
+    document.removeEventListener('mousemove', handleMouseMoveGlobal);
+    document.removeEventListener('mouseup', handleMouseUpGlobal);
+  };
+
+  // 清理事件監聽和動畫
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMoveGlobal);
+      document.removeEventListener('mouseup', handleMouseUpGlobal);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      isAnimating.current = false;
+    };
+  }, []);
+
+  // Track translate percentage based on visible slots (已改用像素值，此變數保留用於其他用途)
+  const translatePct = (current * 100) / visible + dragOffset * 100;
+  
+  // 當 current 改變時，更新 DOM（自動切換時）
+  useEffect(() => {
+    if (sliderRef.current && !isDragging.current && !isAnimating.current && carouselRef.current) {
+      const containerWidth = carouselRef.current.offsetWidth;
+      const itemWidth = containerWidth / visible;
+      const translatePx = current * itemWidth;
+      sliderRef.current.style.transform = `translateX(-${translatePx}px)`;
+      sliderRef.current.style.transition = 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    }
+  }, [current, visible]);
 
   return (
     <section className="bg-[#A4835E] py-16 md:py-24">
@@ -147,45 +449,39 @@ export default function LatestNewsSection() {
         </h2>
 
         <div className="relative select-none">
-          {/* Arrow controls */}
-          <button
-            type="button"
-            aria-label="上一張"
-            onClick={goPrev}
-            className="flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/45"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            aria-label="下一張"
-            onClick={goNext}
-            className="flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/45"
-          >
-            ›
-          </button>
-
           {/* Carousel viewport */}
-          <div className="overflow-hidden" style={{ touchAction: 'pan-y' }}>
+          <div 
+            ref={carouselRef}
+            className="overflow-hidden cursor-grab active:cursor-grabbing" 
+            style={{ touchAction: 'pan-y' }}
+            onMouseDown={handleMouseDown}
+          >
             <div
-              className="flex transition-transform duration-500 ease-out items-stretch"
+              ref={sliderRef}
+              className="flex items-stretch"
               style={{ 
                 transform: `translateX(-${translatePct}%)`,
-                transition: isDragging.current ? 'none' : 'transform 500ms ease-out'
+                transition: 'transform 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                willChange: 'transform',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transformStyle: 'preserve-3d'
               }}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
               {NEWS_ITEMS.map((item, idx) => (
-                <div key={item.image} style={{ width: `${100 / visible}%` }} className="shrink-0 flex flex-col px-2 md:px-3">
+                <div key={item.image} data-card-index={idx} style={{ width: `${100 / visible}%` }} className="shrink-0 flex flex-col px-2 md:px-3">
                   {/* 圖片容器：固定高度 */}
                   <div className="relative w-full aspect-[7/8] overflow-hidden border border-[var(--border-main)]/40 bg-black/10 shrink-0">
                     <OverlayCard
                       href="/news"
                       ariaLabel={`詳細內容：${item.title}`}
-                      className="relative w-full h-full"
+                      className={`relative w-full h-full ${isDraggingState && hoveredIndex !== idx ? 'pointer-events-none' : ''}`}
                       zoomOnHover={false}
+                      disableHover={isDraggingState && hoveredIndex !== idx}
+                      forceShow={isDraggingState && hoveredIndex === idx}
                     >
                       <Image
                         src={item.image}
